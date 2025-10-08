@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>MusicLink</title>
+	<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+	<header>
+		<h1>MusicLink</h1>
+	</header>
+
+	<main>
+		<form id="search-form" role="search" aria-label="Search MusicLink">
+			<label for="engine">Engine:</label>
+			<select id="engine" name="engine">
+				<option value="">-- Selecciona una opción --</option>
+				<option value="musicBrainz">MusicBrainz</option>
+				<option value="spotify">Spotify</option>
+				<option value="youtube">Youtube</option>
+				<option value="soundCloud">SoundCloud</option>
+			</select>
+			<label for="searchType">Type:</label>
+			<select id="searchType" name="searchType">
+				<option value="">-- Selecciona una opción --</option>
+				<option value="song">Song</option>
+				<option value="album">Album</option>
+				<option value="artist">Artist</option>
+			</select>
+			<label for="search-input" class="visually-hidden">Search</label>
+			<input id="search-input" name="q" type="search" placeholder="Search songs, artists, albums..." />
+			<button id="search-btn" type="submit">Search</button>
+		</form>
+        <div id="results"></div>
+	</main>
+
+	<script src="js/main.js" defer></script>
+</body>
+</html>

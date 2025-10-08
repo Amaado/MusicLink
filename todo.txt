@@ -1,0 +1,4 @@
+Info acústica https://acousticbrainz.org/
+Info estadísticas ListenBrainz o CritiqueBrainz
+Caratulas https://coverartarchive.org/
+Efectos hover de los discos de https://lafonoteca.net/
