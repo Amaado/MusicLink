@@ -14,12 +14,12 @@ const PORT = 4000;
 // 1️⃣ CORS: permite peticiones desde tu frontend
 // ----------------------------------------------------
 app.use(cors({
-  origin: ["http://localhost:5500", "http://127.0.0.1:5500"], // ajusta si usas otro puerto
+  origin: ["http://localhost:5500", "http://127.0.0.1:5500"],
   methods: ["GET"]
 }));
 
 // ----------------------------------------------------
-// 2️⃣ Leer las claves del archivo local
+// 2️⃣ Leer claves del archivo local
 // ----------------------------------------------------
 function loadKeys() {
   const file = fs.readFileSync("./keys/spApiKey.txt", "utf-8");
@@ -65,7 +65,25 @@ app.get("/spotify-token", async (req, res) => {
 });
 
 // ----------------------------------------------------
-// 4️⃣ Arrancar el servidor
+// 4️⃣ Endpoint proxy para ListenBrainz
+// ----------------------------------------------------
+app.get("/listenbrainz/:mbid", async (req, res) => {
+  const { mbid } = req.params;
+  try {
+    const response = await fetch(`https://api.listenbrainz.org/1/recording/${mbid}/stats`);
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Error desde ListenBrainz" });
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error al conectar con ListenBrainz:", error);
+    res.status(500).json({ error: "Error en el proxy ListenBrainz" });
+  }
+});
+
+// ----------------------------------------------------
+// 5️⃣ Arrancar el servidor
 // ----------------------------------------------------
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);

@@ -79,26 +79,38 @@ document.addEventListener('DOMContentLoaded', () => {
 			const unifiedResults = [];
 
 			for (const item of items) {
-				if (type === "track") {
-					const links = await getOdesliLinks(item.external_urls.spotify);
+				const links = await getOdesliLinks(item.external_urls.spotify);
+				const listens = await getListenBrainzPlays(item.external_ids?.isrc);
+
+				// 👇 evaluamos el tipo directamente desde la API
+				if (item.type === "track") {
 					unifiedResults.push({
 						title: item.name,
-						artist: item.artists[0].name,
-						album: item.album.name,
-						cover: item.album.images[0]?.url,
+						artist: item.artists?.[0]?.name || "Desconocido",
+						album: item.album?.name || "Sin álbum",
+						cover: item.album?.images?.[0]?.url || "",
+						isrc: item.external_ids?.isrc || null,
+						typeLabel: "🎵 Canción única",
+						duration: item.duration_ms || "?",
+						plays: listens || "?",
 						links: {
 							spotify: links.spotify?.url || null,
 							youtube: links.youtube?.url || links.youtubeMusic?.url || null,
 							soundcloud: links.soundcloud?.url || null,
 						},
 					});
-				} else if (type === "album") {
-					const links = await getOdesliLinks(item.external_urls.spotify);
+				}
+				// 👇 si no es track, evaluamos si es album
+				else if (item.type === "album") {
 					unifiedResults.push({
 						title: item.name,
-						artist: item.artists[0].name,
+						artist: item.artists?.[0]?.name || "Desconocido",
 						album: item.name,
-						cover: item.images[0]?.url,
+						cover: item.images?.[0]?.url || "",
+						isrc: item.external_ids?.isrc || null,
+						typeLabel: "💿 Álbum",
+						duration: null,
+						plays: listens || "?",
 						links: {
 							spotify: links.spotify?.url || null,
 							youtube: links.youtube?.url || links.youtubeMusic?.url || null,
@@ -108,7 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			}
 
-			return unifiedResults;
+
+			// 🔁 Eliminar duplicados por título + artista
+			const uniqueResults = unifiedResults.filter(
+				(song, index, self) =>
+					index === self.findIndex(
+						(t) => t.title === song.title && t.artist === song.artist
+					)
+			);
+
+			return uniqueResults;
 		}
 
 		// Otros motores (por ahora no implementados)
@@ -116,12 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		return [];
 	}
 
+
 	// ======================================================
 	// CONSULTA ODESLI
 	// ======================================================
 	async function getOdesliLinks(url) {
+		if (!url || !url.startsWith("https://")) return {};
 		try {
 			const res = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(url)}`);
+			if (!res.ok) return {};
 			const data = await res.json();
 			return data.linksByPlatform || {};
 		} catch (err) {
@@ -129,6 +153,43 @@ document.addEventListener('DOMContentLoaded', () => {
 			return {};
 		}
 	}
+
+
+	async function getListenBrainzPlays(isrc) {
+		if (!isrc) return null;
+
+		try {
+			// 1️⃣ Buscar MBID desde MusicBrainz
+			const mbRes = await fetch(`https://musicbrainz.org/ws/2/recording?query=isrc:${isrc}&fmt=json`);
+			const mbData = await mbRes.json();
+			const mbid = mbData.recordings?.[0]?.id;
+			if (!mbid) return null;
+
+			// 2️⃣ Llamar a tu backend en vez de ListenBrainz directo
+			const lbRes = await fetch(`http://localhost:4000/listenbrainz/${mbid}`);
+			const lbData = await lbRes.json();
+
+			return lbData.payload?.count_listens || 0;
+		} catch (err) {
+			console.error("Error obteniendo reproducciones ListenBrainz:", err);
+			return null;
+		}
+	}
+
+
+	function formatDurationSpoty(ms) {
+		if (!ms) return "";
+		const totalSeconds = Math.floor(ms / 1000);
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = totalSeconds % 60;
+		return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+	}
+
+	function formatNumber(num) {
+		if (!num) return "?";
+		return num.toLocaleString("es-ES");
+	}
+
 
 	// ======================================================
 	// RENDERIZAR RESULTADOS
@@ -145,18 +206,21 @@ document.addEventListener('DOMContentLoaded', () => {
 			const card = document.createElement("div");
 			card.classList.add("song-card");
 
-			card.innerHTML = `
-				<img src="${song.cover}" alt="cover" width="80" height="80" style="border-radius:8px; margin-right:10px;">
-				<div style="display:inline-block; vertical-align:top;">
-					<strong>${song.title}</strong><br>
-					<span>${song.artist}</span><br>
-					<div style="margin-top:6px;">
-						${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank">🎧 Spotify</a>` : ""}
-						${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank">▶️ YouTube</a>` : ""}
-						${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank">☁️ SoundCloud</a>` : ""}
-					</div>
+		card.innerHTML = `
+			<img src="${song.cover}" alt="cover" width="80" height="80" style="border-radius:8px; margin-right:10px;">
+			<div style="display:inline-block; vertical-align:top;">
+				<strong>${song.title}</strong><br>
+				<span>${song.artist}</span><br>
+				<span style="color:#555;">${song.typeLabel}</span><br>
+				${song.duration ? `<span style="color:#777;">Duración: ${formatDurationSpoty(song.duration)}</span><br>` : ""}
+				${song.plays ? `<span style="color:#999;">Reproducciones: ${formatNumber(song.plays)}</span><br>` : ""}
+				<div style="margin-top:6px;">
+					${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank">🎧 Spotify</a>` : ""}
+					${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank">▶️ YouTube</a>` : ""}
+					${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank">☁️ SoundCloud</a>` : ""}
 				</div>
-			`;
+			</div>
+		`;
 
 			card.style.display = "flex";
 			card.style.alignItems = "center";
