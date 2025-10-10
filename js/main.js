@@ -43,98 +43,125 @@ document.addEventListener('DOMContentLoaded', () => {
 	// FUNCIÓN PRINCIPAL DE BÚSQUEDA
 	// ======================================================
 	async function search(engine, input, type) {
-		if (engine === "spotify") {
-
-			// 1️⃣ Obtener token desde tu backend
-			const tokenRes = await fetch("http://localhost:4000/spotify-token");
-			const { token } = await tokenRes.json();
-
-			if (!token) {
-				console.error("❌ No se recibió token desde el backend");
-				results.textContent = "Error: el servidor no devolvió un token válido.";
-				return [];
-			}
-
-			// 2️⃣ Buscar en Spotify
-			const searchUrl = `${ENGINES.spotify.searchUrl}?q=${encodeURIComponent(input)}&type=${type}&limit=10`;
-			const searchRes = await fetch(searchUrl, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			const data = await searchRes.json();
-			console.log("🔎 Respuesta Spotify:", data);
-
-			// 3️⃣ Procesar resultados según tipo
-			let items = [];
-			if (type === "track") {
-				items = data.tracks?.items || [];
-			} else if (type === "album") {
-				items = data.albums?.items || [];
-			}
-
-			if (!items.length) {
-				results.textContent = "No se encontraron resultados.";
-				return [];
-			}
-
-			const unifiedResults = [];
-
-			for (const item of items) {
-				const links = await getOdesliLinks(item.external_urls.spotify);
-				const listens = await getListenBrainzPlays(item.external_ids?.isrc);
-
-				// 👇 evaluamos el tipo directamente desde la API
-				if (item.type === "track") {
-					unifiedResults.push({
-						title: item.name,
-						artist: item.artists?.[0]?.name || "Desconocido",
-						album: item.album?.name || "Sin álbum",
-						cover: item.album?.images?.[0]?.url || "",
-						isrc: item.external_ids?.isrc || null,
-						typeLabel: "🎵 Canción única",
-						duration: item.duration_ms || "?",
-						plays: listens || "?",
-						links: {
-							spotify: links.spotify?.url || null,
-							youtube: links.youtube?.url || links.youtubeMusic?.url || null,
-							soundcloud: links.soundcloud?.url || null,
-						},
-					});
-				}
-				// 👇 si no es track, evaluamos si es album
-				else if (item.type === "album") {
-					unifiedResults.push({
-						title: item.name,
-						artist: item.artists?.[0]?.name || "Desconocido",
-						album: item.name,
-						cover: item.images?.[0]?.url || "",
-						isrc: item.external_ids?.isrc || null,
-						typeLabel: "💿 Álbum",
-						duration: null,
-						plays: listens || "?",
-						links: {
-							spotify: links.spotify?.url || null,
-							youtube: links.youtube?.url || links.youtubeMusic?.url || null,
-							soundcloud: links.soundcloud?.url || null,
-						},
-					});
-				}
-			}
-
-
-			// 🔁 Eliminar duplicados por título + artista
-			const uniqueResults = unifiedResults.filter(
-				(song, index, self) =>
-					index === self.findIndex(
-						(t) => t.title === song.title && t.artist === song.artist
-					)
-			);
-
-			return uniqueResults;
+		if (engine !== "spotify") {
+			results.textContent = `Engine "${engine}" no implementado aún.`;
+			return [];
 		}
 
-		// Otros motores (por ahora no implementados)
-		results.textContent = `Engine "${engine}" no implementado aún.`;
-		return [];
+		// 1️⃣ Obtener token desde backend
+		const tokenRes = await fetch("https://127.0.0.1:4000/spotify-token");
+		const { token } = await tokenRes.json();
+		if (!token) {
+			console.error("❌ No se recibió token desde el backend");
+			results.textContent = "Error: el servidor no devolvió un token válido.";
+			return [];
+		}
+
+		// 2️⃣ Buscar en Spotify
+		const searchUrl = `${ENGINES.spotify.searchUrl}?q=${encodeURIComponent(input)}&type=${type}&limit=10`;
+		const searchRes = await fetch(searchUrl, {
+			headers: { Authorization: `Bearer ${token}` },
+		});
+		const data = await searchRes.json();
+		console.log("🔎 Respuesta Spotify:", data);
+
+		let items = [];
+		if (type === "track") items = data.tracks?.items || [];
+		else if (type === "album") items = data.albums?.items || [];
+
+		if (!items.length) {
+			results.textContent = "No se encontraron resultados.";
+			return [];
+		}
+
+		// 🚀 Paralelizar procesado
+		const promises = items.map(async (item) => {
+			const links = await getOdesliLinks(item.external_urls.spotify);
+			const youtubeUrl = links.youtube?.url || links.youtubeMusic?.url || null;
+			let ytData = { views: 0, videoId: null };
+
+			if (youtubeUrl) {
+				const videoId = youtubeUrl.split("v=")[1]?.split("&")[0];
+				if (videoId) {
+					const ytRes = await fetch(`https://127.0.0.1:4000/youtube-stats/${videoId}`);
+					ytData = await ytRes.json();
+				}
+			}
+
+			if (item.type === "track") {
+				console.log(item.name + " - Arrived");
+				return {
+					title: item.name,
+					artist: item.artists?.[0]?.name || "Desconocido",
+					album: item.album?.name || "Sin álbum",
+					cover: item.album?.images?.[0]?.url || "",
+					isrc: item.external_ids?.isrc || null,
+					typeLabel: "🎵 Canción única",
+					duration: item.duration_ms || "?",
+					views: Number(ytData.views) || 0,
+					links: {
+						spotify: links.spotify?.url || null,
+						youtubeMusic: links.youtubeMusic?.url || null,
+						youtube: links.youtube?.url || null,
+						appleMusic: links.appleMusic?.url || null,
+						itunes: links.itunes?.url || null,
+						deezer: links.deezer?.url || null,
+						soundcloud: links.soundcloud?.url || null,
+						tidal: links.tidal?.url || null,
+						amazonMusic: links.amazonMusic?.url || null,
+						pandora: links.pandora?.url || null,
+						bandcamp: links.bandcamp?.url || null,
+						napster: links.napster?.url || null,
+						anghami: links.anghami?.url || null,
+						boomplay: links.boomplay?.url || null,
+						audiomack: links.audiomack?.url || null,
+						yandex: links.yandex?.url || null,
+					},
+
+				};
+			} else if (item.type === "album") {
+				return {
+					title: item.name,
+					artist: item.artists?.[0]?.name || "Desconocido",
+					album: item.name,
+					cover: item.images?.[0]?.url || "",
+					isrc: item.external_ids?.isrc || null,
+					typeLabel: "💿 Álbum",
+					duration: null,
+					views: Number(ytData.views) || 0,
+					links: {
+						spotify: links.spotify?.url || null,
+						youtubeMusic: links.youtubeMusic?.url || null,
+						youtube: links.youtube?.url || null,
+						appleMusic: links.appleMusic?.url || null,
+						itunes: links.itunes?.url || null,
+						deezer: links.deezer?.url || null,
+						soundcloud: links.soundcloud?.url || null,
+						tidal: links.tidal?.url || null,
+						amazonMusic: links.amazonMusic?.url || null,
+						pandora: links.pandora?.url || null,
+						bandcamp: links.bandcamp?.url || null,
+						napster: links.napster?.url || null,
+						anghami: links.anghami?.url || null,
+						boomplay: links.boomplay?.url || null,
+						audiomack: links.audiomack?.url || null,
+						yandex: links.yandex?.url || null,
+					},
+				};
+			}
+		});
+
+		const unifiedResults = await Promise.all(promises);
+
+		// 🔁 Eliminar duplicados
+		const uniqueResults = unifiedResults.filter(
+			(song, index, self) =>
+				index === self.findIndex(
+					(t) => t.title === song.title && t.artist === song.artist
+				)
+		);
+
+		return uniqueResults;
 	}
 
 
@@ -142,37 +169,21 @@ document.addEventListener('DOMContentLoaded', () => {
 	// CONSULTA ODESLI
 	// ======================================================
 	async function getOdesliLinks(url) {
-		if (!url || !url.startsWith("https://")) return {};
+		if (!url || !(url.startsWith("https://open.spotify.com/track/") || url.startsWith("https://open.spotify.com/album/"))) {
+			console.warn("⚠️ URL de Spotify inválida para Odesli:", url);
+			return {};
+		}
 		try {
-			const res = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(url)}`);
-			if (!res.ok) return {};
+			const res = await fetch(`https://127.0.0.1:4000/odesli?url=${encodeURIComponent(url)}`);
+			if (!res.ok) {
+				console.warn("⚠️ Odesli devolvió error:", res.status);
+				return {};
+			}
 			const data = await res.json();
 			return data.linksByPlatform || {};
 		} catch (err) {
 			console.error("Error en Odesli:", err);
 			return {};
-		}
-	}
-
-
-	async function getListenBrainzPlays(isrc) {
-		if (!isrc) return null;
-
-		try {
-			// 1️⃣ Buscar MBID desde MusicBrainz
-			const mbRes = await fetch(`https://musicbrainz.org/ws/2/recording?query=isrc:${isrc}&fmt=json`);
-			const mbData = await mbRes.json();
-			const mbid = mbData.recordings?.[0]?.id;
-			if (!mbid) return null;
-
-			// 2️⃣ Llamar a tu backend en vez de ListenBrainz directo
-			const lbRes = await fetch(`http://localhost:4000/listenbrainz/${mbid}`);
-			const lbData = await lbRes.json();
-
-			return lbData.payload?.count_listens || 0;
-		} catch (err) {
-			console.error("Error obteniendo reproducciones ListenBrainz:", err);
-			return null;
 		}
 	}
 
@@ -186,9 +197,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function formatNumber(num) {
-		if (!num) return "?";
-		return num.toLocaleString("es-ES");
+		if (num === null || num === undefined) return "?";
+
+		const n = Number(num);
+		if (isNaN(n)) return "?";
+
+		// Forzar separador de miles con estilo español
+		return n.toLocaleString("es-ES", {
+			useGrouping: true,
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		});
 	}
+
 
 
 	// ======================================================
@@ -206,18 +227,30 @@ document.addEventListener('DOMContentLoaded', () => {
 			const card = document.createElement("div");
 			card.classList.add("song-card");
 
-		card.innerHTML = `
+			card.innerHTML = `
 			<img src="${song.cover}" alt="cover" width="80" height="80" style="border-radius:8px; margin-right:10px;">
 			<div style="display:inline-block; vertical-align:top;">
 				<strong>${song.title}</strong><br>
 				<span>${song.artist}</span><br>
 				<span style="color:#555;">${song.typeLabel}</span><br>
 				${song.duration ? `<span style="color:#777;">Duración: ${formatDurationSpoty(song.duration)}</span><br>` : ""}
-				${song.plays ? `<span style="color:#999;">Reproducciones: ${formatNumber(song.plays)}</span><br>` : ""}
-				<div style="margin-top:6px;">
-					${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank">🎧 Spotify</a>` : ""}
-					${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank">▶️ YouTube</a>` : ""}
-					${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank">☁️ SoundCloud</a>` : ""}
+				${song.views ? `<span style="color:#999;">YouTube views: ${formatNumber(song.views)}</span><br>` : ""}
+					${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank">🎧 Spotify</a> ` : ""}
+					${song.links.youtubeMusic ? `<a href="${song.links.youtubeMusic}" target="_blank">🎵 YouTube Music</a> ` : ""}
+					${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank">▶️ YouTube</a> ` : ""}
+					${song.links.appleMusic ? `<a href="${song.links.appleMusic}" target="_blank">🍎 Apple Music</a> ` : ""}
+					${song.links.itunes ? `<a href="${song.links.itunes}" target="_blank">💿 iTunes</a> ` : ""}
+					${song.links.deezer ? `<a href="${song.links.deezer}" target="_blank">🎶 Deezer</a> ` : ""}
+					${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank">☁️ SoundCloud</a> ` : ""}
+					${song.links.tidal ? `<a href="${song.links.tidal}" target="_blank">🌊 Tidal</a> ` : ""}
+					${song.links.amazonMusic ? `<a href="${song.links.amazonMusic}" target="_blank">🛒 Amazon Music</a> ` : ""}
+					${song.links.pandora ? `<a href="${song.links.pandora}" target="_blank">📻 Pandora</a> ` : ""}
+					${song.links.bandcamp ? `<a href="${song.links.bandcamp}" target="_blank">🎸 Bandcamp</a> ` : ""}
+					${song.links.napster ? `<a href="${song.links.napster}" target="_blank">🎧 Napster</a> ` : ""}
+					${song.links.anghami ? `<a href="${song.links.anghami}" target="_blank">🎼 Anghami</a> ` : ""}
+					${song.links.boomplay ? `<a href="${song.links.boomplay}" target="_blank">🔥 Boomplay</a> ` : ""}
+					${song.links.audiomack ? `<a href="${song.links.audiomack}" target="_blank">🎵 Audiomack</a> ` : ""}
+					${song.links.yandex ? `<a href="${song.links.yandex}" target="_blank">🇷🇺 Yandex</a> ` : ""}
 				</div>
 			</div>
 		`;

@@ -6,6 +6,7 @@ import express from "express";
 import fetch from "node-fetch";
 import fs from "fs";
 import cors from "cors";
+import https from 'https';
 
 const app = express();
 const PORT = 4000;
@@ -14,8 +15,8 @@ const PORT = 4000;
 // 1️⃣ CORS: permite peticiones desde tu frontend
 // ----------------------------------------------------
 app.use(cors({
-  origin: ["http://localhost:5500", "http://127.0.0.1:5500"],
-  methods: ["GET"]
+  origin: ['https://127.0.0.1:5500', 'https://localhost:5500'],
+  credentials: true
 }));
 
 // ----------------------------------------------------
@@ -64,27 +65,64 @@ app.get("/spotify-token", async (req, res) => {
   }
 });
 
+
 // ----------------------------------------------------
-// 4️⃣ Endpoint proxy para ListenBrainz
+// 🔹 Proxy para Odesli (song.link)
 // ----------------------------------------------------
-app.get("/listenbrainz/:mbid", async (req, res) => {
-  const { mbid } = req.params;
+app.get("/odesli", async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: "Falta parámetro url" });
+
   try {
-    const response = await fetch(`https://api.listenbrainz.org/1/recording/${mbid}/stats`);
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Error desde ListenBrainz" });
-    }
+    const response = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(url)}`);
     const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error("Error al conectar con ListenBrainz:", error);
-    res.status(500).json({ error: "Error en el proxy ListenBrainz" });
+    res.json(data); // devolvemos el JSON al frontend
+  } catch (err) {
+    console.error("Error en proxy Odesli:", err);
+    res.status(500).json({ error: "Error al conectar con Odesli" });
   }
 });
+
+
+
+// ----------------------------------------------------
+// 🔹 Proxy para obtener vistas de un video YouTube (por ID)
+// ----------------------------------------------------
+app.get("/youtube-stats/:id", async (req, res) => {
+  const videoId = req.params.id;
+  if (!videoId) return res.status(400).json({ error: "Falta videoId" });
+
+  try {
+    const file = fs.readFileSync("./keys/ytApiKey.txt", "utf-8");
+    const YOUTUBE_API_KEY = file.split("=")[1].trim();
+
+    const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`;
+    const statsRes = await fetch(statsUrl);
+    const statsData = await statsRes.json();
+
+    const stats = statsData.items?.[0]?.statistics || {};
+    res.json({
+      videoId,
+      views: stats.viewCount || 0,
+      likes: stats.likeCount || 0,
+    });
+  } catch (error) {
+    console.error("Error al consultar YouTube API:", error);
+    res.status(500).json({ error: "Error en servidor de YouTube" });
+  }
+});
+
+
+
+
+
+const options = {
+  key: fs.readFileSync('C:/Users/aamacib/Documents/GitHub/MusicLink/certs/127.0.0.1-key.pem'),
+  cert: fs.readFileSync('C:/Users/aamacib/Documents/GitHub/MusicLink/certs/127.0.0.1.pem')
+};
 
 // ----------------------------------------------------
 // 5️⃣ Arrancar el servidor
 // ----------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-});
+https.createServer(options, app)
+  .listen(4000, () => console.log('Servidor HTTPS corriendo en https://127.0.0.1:5500'));
