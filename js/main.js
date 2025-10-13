@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const results = document.getElementById('results');
 	const searchForm = document.getElementById('search-form');
 	const inputSearch = document.getElementById('search-input');
+	const engineComboBox = document.getElementById("engine");
+	const typeComboBox = document.getElementById("searchType");
 
 	// ======================================================
 	// CONFIGURACIÓN DE MOTORES
@@ -18,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	searchForm.addEventListener('submit', async (e) => {
 		e.preventDefault();
 
-		const engine = document.getElementById("engine").value.trim();
-		const type = document.getElementById("searchType").value.trim();
+		const engine = engineComboBox.value.trim();
+		const type = typeComboBox.value.trim();
 		const input = inputSearch.value.trim();
 
 		results.innerHTML = "";
@@ -40,14 +42,46 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 	// ======================================================
+	// PREVENT YOUTUBE ALBUM
+	// ======================================================
+
+
+	engineComboBox.addEventListener("change", () => {
+		const selectedEngine = engineComboBox.value;
+		const albumOption = typeComboBox.querySelector('option[value="album"]');
+
+		if (selectedEngine === "youtube") {
+			// 🔒 Desactivar opción "Album"
+			albumOption.disabled = true;
+
+			// Si estaba seleccionada, cambiar automáticamente a "Song"
+			if (typeComboBox.value === "album") {
+				typeComboBox.value = "track";
+			}
+		} else {
+			// 🔓 Reactivar opción "Album"
+			albumOption.disabled = false;
+		}
+	});
+
+	// ======================================================
 	// FUNCIÓN PRINCIPAL DE BÚSQUEDA
 	// ======================================================
 	async function search(engine, input, type) {
-		if (engine !== "spotify") {
-			results.textContent = `Engine "${engine}" no implementado aún.`;
-			return [];
-		}
+	if (engine === "spotify") {
+		return await searchSpotify(input, type);
+	}
 
+	if (engine === "youtube") {
+		return await searchYouTube(input, type);
+	}
+
+	results.textContent = `Engine "${engine}" no implementado aún.`;
+	return [];
+}
+
+	// 🟢 === FUNCIÓN ORIGINAL AISLADA (sin cambios de lógica) ===
+	async function searchSpotify(input, type) {
 		// 1️⃣ Obtener token desde backend
 		const tokenRes = await fetch("https://127.0.0.1:4000/spotify-token");
 		const { token } = await tokenRes.json();
@@ -68,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		let items = [];
 		if (type === "track") items = data.tracks?.items || [];
 		else if (type === "album") items = data.albums?.items || [];
+		else if (type === "artist") items = data.artists?.items || [];
 
 		if (!items.length) {
 			results.textContent = "No se encontraron resultados.";
@@ -92,62 +127,58 @@ document.addEventListener('DOMContentLoaded', () => {
 				console.log(item.name + " - Arrived");
 				return {
 					title: item.name,
-					artist: item.artists?.[0]?.name || "Desconocido",
+					artist: item.artists?.map(a => ({
+						name: a.name,
+						url: a.external_urls?.spotify || null
+					})) || [],
 					album: item.album?.name || "Sin álbum",
 					cover: item.album?.images?.[0]?.url || "",
 					isrc: item.external_ids?.isrc || null,
-					typeLabel: "🎵 Canción única",
-					duration: item.duration_ms || "?",
+					typeLabel: "track",
+					duration: formatDurationSpoty(item.duration_ms) || "?",
 					views: Number(ytData.views) || 0,
-					links: {
-						spotify: links.spotify?.url || null,
-						youtubeMusic: links.youtubeMusic?.url || null,
-						youtube: links.youtube?.url || null,
-						appleMusic: links.appleMusic?.url || null,
-						itunes: links.itunes?.url || null,
-						deezer: links.deezer?.url || null,
-						soundcloud: links.soundcloud?.url || null,
-						tidal: links.tidal?.url || null,
-						amazonMusic: links.amazonMusic?.url || null,
-						pandora: links.pandora?.url || null,
-						bandcamp: links.bandcamp?.url || null,
-						napster: links.napster?.url || null,
-						anghami: links.anghami?.url || null,
-						boomplay: links.boomplay?.url || null,
-						audiomack: links.audiomack?.url || null,
-						yandex: links.yandex?.url || null,
-					},
-
+					links: buildLinks(links),
 				};
 			} else if (item.type === "album") {
 				return {
 					title: item.name,
-					artist: item.artists?.[0]?.name || "Desconocido",
+					artist: item.artists?.map(a => ({
+						name: a.name,
+						url: a.external_urls?.spotify || null
+					})) || [],
 					album: item.name,
 					cover: item.images?.[0]?.url || "",
 					isrc: item.external_ids?.isrc || null,
-					typeLabel: "💿 Álbum",
+					typeLabel: "album",
 					duration: null,
 					views: Number(ytData.views) || 0,
-					links: {
-						spotify: links.spotify?.url || null,
-						youtubeMusic: links.youtubeMusic?.url || null,
-						youtube: links.youtube?.url || null,
-						appleMusic: links.appleMusic?.url || null,
-						itunes: links.itunes?.url || null,
-						deezer: links.deezer?.url || null,
-						soundcloud: links.soundcloud?.url || null,
-						tidal: links.tidal?.url || null,
-						amazonMusic: links.amazonMusic?.url || null,
-						pandora: links.pandora?.url || null,
-						bandcamp: links.bandcamp?.url || null,
-						napster: links.napster?.url || null,
-						anghami: links.anghami?.url || null,
-						boomplay: links.boomplay?.url || null,
-						audiomack: links.audiomack?.url || null,
-						yandex: links.yandex?.url || null,
-					},
+					links: buildLinks(links),
 				};
+			}// 🔹 Si es un artista
+			else if (item.type === "artist") {
+				try {
+					const artistId = item.id;
+					const spotifyUrl = item.external_urls.spotify;
+
+					// 🔹 Llamar al backend para obtener datos del artista
+					const statsRes = await fetch(`https://127.0.0.1:4000/spotify-artist/${artistId}`);
+					const stats = await statsRes.json();
+
+					return {
+						title: stats.name || item.name,
+						artist: null,
+						album: null,
+						cover: stats.image || item.images?.[0]?.url || "",
+						isrc: null,
+						typeLabel: "artist",
+						duration: null,
+						followers: stats.followers || 0,
+						links: { spotify: spotifyUrl },
+					};
+				} catch (err) {
+					console.error("Error procesando artista:", err);
+					return null;
+				}
 			}
 		});
 
@@ -164,15 +195,90 @@ document.addEventListener('DOMContentLoaded', () => {
 		return uniqueResults;
 	}
 
+	async function searchYouTube(input, type) {
+		try {
+			// 1️⃣ Llamar al backend local (ya devuelve todo: snippet + stats + duration)
+			const res = await fetch(`https://127.0.0.1:4000/youtube-search?q=${encodeURIComponent(input)}`);
+			const data = await res.json();
+
+			console.log("🔎 Respuesta YouTube:", data);
+
+			const items = data.items || [];
+			if (!items.length) {
+				results.textContent = "No se encontraron resultados en YouTube.";
+				return [];
+			}
+
+			// 2️⃣ Procesar resultados con Odesli
+			const promises = items.map(async (item) => {
+				const videoId = item.videoId;
+				const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+				// 🌐 Obtener enlaces con Odesli
+				const links = await getOdesliLinks(youtubeUrl);
+
+				return {
+					title: item.title,
+					artist: item.channelTitle || "Canal desconocido",
+					album: "—",
+					cover: item.thumbnails?.medium?.url || "",
+					isrc: null,
+					typeLabel: "track",
+					duration: formatYouTubeDuration(item.duration),
+					views: Number(item.views) || 0,
+					links: buildLinks(links),
+				};
+			});
+
+			const unifiedResults = await Promise.all(promises);
+
+			// 🔁 Eliminar duplicados (mismo criterio que Spotify)
+			const uniqueResults = unifiedResults.filter(
+				(song, index, self) =>
+					index === self.findIndex(
+						(t) => t.title === song.title && t.artist === song.artist
+					)
+			);
+
+			return uniqueResults;
+
+		} catch (error) {
+			console.error("❌ Error al buscar en YouTube:", error);
+			results.textContent = "Error al conectar con el servidor de YouTube.";
+			return [];
+		}
+	}
+
+
+	function buildLinks(links) {
+		return {
+			spotify: links.spotify?.url || null,
+			youtubeMusic: links.youtubeMusic?.url || null,
+			youtube: links.youtube?.url || null,
+			appleMusic: links.appleMusic?.url || null,
+			deezer: links.deezer?.url || null,
+			soundcloud: links.soundcloud?.url || null,
+			tidal: links.tidal?.url || null,
+			amazonMusic: links.amazonMusic?.url || null,
+			pandora: links.pandora?.url || null,
+			bandcamp: links.bandcamp?.url || null,
+			napster: links.napster?.url || null,
+			anghami: links.anghami?.url || null,
+			boomplay: links.boomplay?.url || null,
+			audiomack: links.audiomack?.url || null,
+			yandex: links.yandex?.url || null,
+		};
+	}
+
 
 	// ======================================================
 	// CONSULTA ODESLI
 	// ======================================================
 	async function getOdesliLinks(url) {
-		if (!url || !(url.startsWith("https://open.spotify.com/track/") || url.startsWith("https://open.spotify.com/album/"))) {
+		/*if (!url || !(url.startsWith("https://open.spotify.com/track/") || url.startsWith("https://open.spotify.com/album/"))) {
 			console.warn("⚠️ URL de Spotify inválida para Odesli:", url);
 			return {};
-		}
+		}*/
 		try {
 			const res = await fetch(`https://127.0.0.1:4000/odesli?url=${encodeURIComponent(url)}`);
 			if (!res.ok) {
@@ -196,6 +302,24 @@ document.addEventListener('DOMContentLoaded', () => {
 		return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 	}
 
+	function formatYouTubeDuration(duration) {
+		if (!duration || typeof duration !== "string") return "—";
+		const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+		if (!match) return "—";
+
+		const hours = parseInt(match[1] || 0);
+		const minutes = parseInt(match[2] || 0);
+		const seconds = parseInt(match[3] || 0);
+
+		if (hours > 0) {
+			return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+				.toString()
+				.padStart(2, "0")}`;
+		} else {
+			return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+		}
+	}
+
 	function formatNumber(num) {
 		if (num === null || num === undefined) return "?";
 
@@ -215,55 +339,81 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ======================================================
 	// RENDERIZAR RESULTADOS
 	// ======================================================
-	async function renderResults(songs) {
-		results.innerHTML = "";
+async function renderResults(songs) {
+	results.innerHTML = "";
 
-		if (!songs.length) {
-			results.textContent = "No se encontraron resultados.";
-			return;
+	if (!songs.length) {
+		results.textContent = "No se encontraron resultados.";
+		return;
+	}
+
+	songs.forEach((song) => {
+		const card = document.createElement("div");
+		card.classList.add("song-card");
+
+		if (song.typeLabel === "artist"){
+			card.classList.add("artist-card");
+		}else{
+			card.innerHTML = `
+				<div class="song-cover-container">
+					<img class="song-cover" src="${song.cover}" alt="cover">
+				</div>
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">${song.title}</strong>
+						<span class="song-artist">
+							${
+								Array.isArray(song.artist)
+								? song.artist
+									.map((a) =>
+										a.url
+										? `<a href="${a.url}" target="_blank" rel="noopener">${a.name}</a>`
+										: a.name
+									)
+									.join(", ")
+								: song.artist
+							}
+						</span>
+
+						${song.duration ? `<span class="song-duration">Duración: ${song.duration}</span>` : ""}
+
+						${
+							song.typeLabel === "👤 Artista" && song.followers
+								? `<span class="song-followers">👥 Followers: ${formatNumber(song.followers)}</span>`
+								: ""
+						}
+
+						${
+							song.views && song.typeLabel !== "👤 Artista"
+								? `<span class="song-views">YouTube views: ${formatNumber(song.views)}</span>`
+								: ""
+						}
+					</div>
+					<div class="song-links">
+							${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank" rel="noopener"><img src="../assets/spotify.png" class="linkIcon"><div class="linkText" class="linkText">Spotify</div></a>` : ""}
+							${song.links.youtubeMusic ? `<a href="${song.links.youtubeMusic}" target="_blank" rel="noopener"><img src="../assets/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>` : ""}
+							${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank" rel="noopener"><img src="../assets/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>` : ""}
+							${song.links.appleMusic ? `<a href="${song.links.appleMusic}" target="_blank" rel="noopener"><img src="../assets/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>` : ""}
+							${song.links.deezer ? `<a href="${song.links.deezer}" target="_blank" rel="noopener"><img src="../assets/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>` : ""}
+							${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank" rel="noopener"><img src="../assets/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>` : ""}
+							${song.links.tidal ? `<a href="${song.links.tidal}" target="_blank" rel="noopener"><img src="../assets/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>` : ""}
+							${song.links.amazonMusic ? `<a href="${song.links.amazonMusic}" target="_blank" rel="noopener"><img src="../assets/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>` : ""}
+							${song.links.pandora ? `<a href="${song.links.pandora}" target="_blank" rel="noopener"><img src="../assets/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>` : ""}
+							${song.links.bandcamp ? `<a href="${song.links.bandcamp}" target="_blank" rel="noopener"><img src="../assets/bandcamp.png" class="linkIcon"><div class="linkText">Bandcamp</div></a>` : ""}
+							${song.links.napster ? `<a href="${song.links.napster}" target="_blank" rel="noopener"><img src="../assets/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>` : ""}
+							${song.links.anghami ? `<a href="${song.links.anghami}" target="_blank" rel="noopener"><img src="../assets/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>` : ""}
+							${song.links.boomplay ? `<a href="${song.links.boomplay}" target="_blank" rel="noopener"><img src="../assets/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>` : ""}
+							${song.links.audiomack ? `<a href="${song.links.audiomack}" target="_blank" rel="noopener"><img src="../assets/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>` : ""}
+							${song.links.yandex ? `<a href="${song.links.yandex}" target="_blank" rel="noopener"><img src="../assets/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>` : ""}
+					</div>
+				</div>
+			`;
+
 		}
 
-		songs.forEach((song) => {
-			const card = document.createElement("div");
-			card.classList.add("song-card");
+		results.appendChild(card);
+	});
+}
 
-			card.innerHTML = `
-			<img src="${song.cover}" alt="cover" width="80" height="80" style="border-radius:8px; margin-right:10px;">
-			<div style="display:inline-block; vertical-align:top;">
-				<strong>${song.title}</strong><br>
-				<span>${song.artist}</span><br>
-				<span style="color:#555;">${song.typeLabel}</span><br>
-				${song.duration ? `<span style="color:#777;">Duración: ${formatDurationSpoty(song.duration)}</span><br>` : ""}
-				${song.views ? `<span style="color:#999;">YouTube views: ${formatNumber(song.views)}</span><br>` : ""}
-					${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank">🎧 Spotify</a> ` : ""}
-					${song.links.youtubeMusic ? `<a href="${song.links.youtubeMusic}" target="_blank">🎵 YouTube Music</a> ` : ""}
-					${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank">▶️ YouTube</a> ` : ""}
-					${song.links.appleMusic ? `<a href="${song.links.appleMusic}" target="_blank">🍎 Apple Music</a> ` : ""}
-					${song.links.itunes ? `<a href="${song.links.itunes}" target="_blank">💿 iTunes</a> ` : ""}
-					${song.links.deezer ? `<a href="${song.links.deezer}" target="_blank">🎶 Deezer</a> ` : ""}
-					${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank">☁️ SoundCloud</a> ` : ""}
-					${song.links.tidal ? `<a href="${song.links.tidal}" target="_blank">🌊 Tidal</a> ` : ""}
-					${song.links.amazonMusic ? `<a href="${song.links.amazonMusic}" target="_blank">🛒 Amazon Music</a> ` : ""}
-					${song.links.pandora ? `<a href="${song.links.pandora}" target="_blank">📻 Pandora</a> ` : ""}
-					${song.links.bandcamp ? `<a href="${song.links.bandcamp}" target="_blank">🎸 Bandcamp</a> ` : ""}
-					${song.links.napster ? `<a href="${song.links.napster}" target="_blank">🎧 Napster</a> ` : ""}
-					${song.links.anghami ? `<a href="${song.links.anghami}" target="_blank">🎼 Anghami</a> ` : ""}
-					${song.links.boomplay ? `<a href="${song.links.boomplay}" target="_blank">🔥 Boomplay</a> ` : ""}
-					${song.links.audiomack ? `<a href="${song.links.audiomack}" target="_blank">🎵 Audiomack</a> ` : ""}
-					${song.links.yandex ? `<a href="${song.links.yandex}" target="_blank">🇷🇺 Yandex</a> ` : ""}
-				</div>
-			</div>
-		`;
 
-			card.style.display = "flex";
-			card.style.alignItems = "center";
-			card.style.marginBottom = "12px";
-			card.style.padding = "8px";
-			card.style.border = "1px solid #ddd";
-			card.style.borderRadius = "10px";
-			card.style.background = "#fafafa";
-
-			results.appendChild(card);
-		});
-	}
 });

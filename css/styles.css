@@ -1,4 +1,164 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+/* TOP HEADER */
+header{
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    height: 100px;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+h1{
+    width: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+#search-form{
+    display: flex;
+    width: 60%;
+    height: 100%;
+    align-items: center;
+    justify-content: left;
+}
+
+#user-container{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 20%;
+}
+
+.user-container-button{
+    width: 50%;
+    height: 60%;
+}
+
+
+/* Body*/
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 #results{
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.song-card{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: left;
+    background-color: rgb(231, 231, 231);
+    width: 90%;
+    height: 150px;
+    padding: 20px;
+    margin-top: 30px;
+
+}
+
+.song-cover-container{
+    display: block;
+    width: auto;
+    height: 100%;
+}
+
+.song-cover{
+    width: auto;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.song-info-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(127, 255, 155);
+    overflow: hidden;
+}
+
+.song-info{
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    height: 50px;
+    background-color: aquamarine;
+}
+
+.song-title{
+
+}
+
+/*Links container*/
+.song-links{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: auto;
+    gap: 5px;
+}
+.song-links a{
+    display: flex;
+    flex-direction: row;
+    gap: 0px;
+    padding: 4px;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+    width: auto;
+    height: 30px;
+    background-color: rgba(126, 126, 126, 0.466);
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: gap 0.8s ease;
+}
+.song-links a:hover{
+    gap: 6px;
+}
+
+.linkIcon{
+    width: auto;
+    height: 22px;
+    border-radius: 4px;
+}
+.linkText{
+    display: block;
+    width: auto;
+    max-width: 0px;
+    margin-right: 0px;
+    transform: scaleX(0);
+    transition: max-width 0.7s ease, margin-right 0.7s ease, transform 0.4s ease;
+}
+.song-links a:hover .linkText{
+    transform: scaleX(1);
+    max-width: 150px;
+    margin-right: 20px;
 }
