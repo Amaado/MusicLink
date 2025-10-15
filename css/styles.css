@@ -70,27 +70,16 @@ main{
 .song-card{
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 25px;
     align-items: center;
     justify-content: left;
-    background-color: rgb(231, 231, 231);
+    background-color: rgba(122, 78, 78, 0.808);
     width: 90%;
     height: 150px;
     padding: 20px;
+    padding-left: 28px;
     margin-top: 30px;
-
-}
-
-.song-cover-container{
-    display: block;
-    width: auto;
-    height: 100%;
-}
-
-.song-cover{
-    width: auto;
-    height: 100%;
-    border-radius: 2px;
+    overflow: hidden;
 }
 
 .song-info-container{
@@ -99,20 +88,35 @@ main{
     justify-content: space-between;
     width: 100%;
     height: 100%;
-    background-color: rgb(127, 255, 155);
     overflow: hidden;
 }
 
 .song-info{
     display: flex;
     flex-direction: column;
+    gap: 5px;
     width: auto;
-    height: 50px;
-    background-color: aquamarine;
+    height: 100%;
 }
 
 .song-title{
-
+    font-size: 22px;
+}
+.song-details{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+.song-details div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.song-details img{
+    width: auto;
+    height: 18px;
 }
 
 /*Links container*/
@@ -161,4 +165,148 @@ main{
     transform: scaleX(1);
     max-width: 150px;
     margin-right: 20px;
+}
+
+
+
+
+.song-cover-container{
+    display: block;
+    width: 110px;
+    height: 110px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease-out;
+}
+
+.box__face {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  transform-style: preserve-3d;
+}
+
+/* Caras del cubo */
+.box__face--front  {
+  transform: translateZ(55px);
+  box-shadow: 0px 0px 0px rgba(0,0,0,0);
+  transition: box-shadow 0.5s ease;
+}
+.box__face--front.active{
+  box-shadow: 5px 5px 15px rgba(0,0,0,.25);
+}
+.box__face--right{ 
+  transform: rotateY(90deg) translateZ(55px) scaleX(0.2) translateX(-217px);
+}
+.box__face--left{ 
+  transform: rotateY(-90deg) translateZ(63px) scaleX(0.2) translateX(217px);
+}
+.box__face--top{ 
+  transform: rotateX(90deg) translateZ(55px) scaleY(0.2) translateY(217px);
+}
+.box__face--bottom { 
+  transform: rotateX(-90deg) translateZ(55px)  scaleY(0.2) translateY(-217px);
+}
+.texture{
+    display: block;
+    position: absolute;
+}
+.textureTop, .textureBottom{
+  width: 134.5%;
+  height: 1180%;
+  transform: translateX(-21px) translateY(-183px);
+  background: rgba(255, 115, 0, 0);
+}
+.textureRight, .textureSubFront, .textureSubRight, .textureSubTop{
+  width: 100%;
+  height: 100.2%;
+  transform: translateX(0px) translateY(0px);
+  background: rgba(255, 115, 0, 0);
+}
+.textureLeft{
+  width: 115%;
+  height: 100.2%;
+  transform: translateX(0px) translateY(0px);
+  background: rgba(255, 115, 0, 0);
+}
+.textureSubTop, .textureSubBottom{
+  width: 100%;
+  height: 105%;
+  transform: translateX(2px) translateY(0px);
+  background: rgba(255, 115, 0, 0);
+}
+
+.box__face {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 110px;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+.box__faceSub--front  {
+  transform: translateZ(58px) scaleX(0.075) translateX(-790px);
+}
+.box__faceSub--right  { 
+  background: hsla(241, 100%, 50%, 0); 
+  transform: rotateY(90deg) translateZ(-55px) scaleX(0.075) translateX(-718px);
+}
+.box__faceSub--top    { 
+  transform: rotateX(90deg) translateZ(55px) scaleY(0.226) scaleX(0.075) translateY(198px) translateX(-789px);
+}
+.box__faceSub--bottom { 
+  transform: rotateX(90deg) translateZ(-55px) scaleY(0.226) scaleX(0.075) translateY(198px) translateX(-789px);
+}
+
+.song-cover-reflect-wrapper{
+    transform: rotateZ(180deg) translate(-65px, -128px) scale(2);
+    perspective: 200px;
+
+}
+.song-cover-reflect-black{
+  position: absolute;
+  display: block;
+  width: 110px;
+  height: 110px;
+  background-color: #444444;
+  transform-origin: top;
+  transform: rotateX(-70deg) translateX(-62px) translateY(111px);
+  transform-style: preserve-3d;
+  transition: 0.3s transform ease, 0.3s opacity ease;
+  opacity: 1;
+}
+.song-cover-reflect-black.active{
+  transform: rotateX(-70deg) translateX(-70px) translateY(80px);
+  opacity: 0.5;
+}
+.song-cover-reflect{
+  position: absolute;
+  display: block;
+  width: 110px;
+  height: 110px;
+  transform-origin: top;
+  transform: rotateX(-70deg) translateX(-70px) translateY(110px);
+  transform-style: preserve-3d;
+  transition: 0.3s transform ease, 0.5s opacity ease;
+  opacity: 1;
+}
+.song-cover-reflect.active{
+  transform: rotateX(-70deg) translateX(-70px) translateY(80px);
+    opacity: 0.5;
+}
+.song-cover-reflect-filter{
+  opacity: 0.3;
+  filter: blur(1.5px);
+}
+.song-cover-reflect-mask{
+
 }

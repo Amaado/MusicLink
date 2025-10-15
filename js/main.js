@@ -335,10 +335,66 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 
+	// ======================================================
+	// DISKS PERSPECTIVE
+	// ======================================================
+	function initDisksPerspectiveListener() {
+		const cards = document.querySelectorAll('.song-card');
 
-	// ======================================================
-	// RENDERIZAR RESULTADOS
-	// ======================================================
+		cards.forEach(card => {
+			const scene = card.querySelector('.song-cover-container');
+			const faceFront = scene.querySelector('.box__face--front');
+			const reflectBlack = card.querySelector('.song-cover-reflect-black');
+			const reflect = card.querySelector('.song-cover-reflect');
+			if (!scene) return; // seguridad
+
+			// Elimina posibles listeners previos (evita duplicados)
+			card.onmousemove = null;
+			card.onmouseleave = null;
+
+			card.addEventListener('mousemove', (e) => {
+				faceFront.classList.add("active");
+				reflectBlack.classList.add("active");
+				reflect.classList.add("active");
+
+				const rect = card.getBoundingClientRect();
+				const x = e.clientX - rect.left; 
+				const y = e.clientY - rect.top;
+
+				const rotateY = ((x / rect.width) - 0.5) * 35;
+				const rotateX = ((y / rect.height) - 0.5) * -35;
+
+				scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+			});
+
+			card.addEventListener('mouseleave', () => {
+				faceFront.classList.remove("active");
+				reflectBlack.classList.remove("active");
+				reflect.classList.remove("active");
+				scene.style.transform = 'rotateY(0deg) rotateX(0deg)';
+			});
+		});
+	}
+initDisksPerspectiveListener();
+
+/*
+function initDisksPerspective() {
+	const cards = document.querySelectorAll('.song-card');
+
+	cards.forEach(card => {
+		const scene = card.querySelector('.song-cover-container');
+		const faceFront = scene.querySelector('.box__face--front');
+		if (!scene) return; // seguridad
+
+		scene.style.transform = `rotateY(90deg) rotateX(0deg)`;
+
+	});
+}
+initDisksPerspective();*/
+
+// ======================================================
+// RENDERIZAR RESULTADOS
+// ======================================================
 async function renderResults(songs) {
 	results.innerHTML = "";
 
@@ -355,9 +411,22 @@ async function renderResults(songs) {
 			card.classList.add("artist-card");
 		}else{
 			card.innerHTML = `
-				<div class="song-cover-container">
-					<img class="song-cover" src="${song.cover}" alt="cover">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black song-cover-reflect-mask"></div>
+					<img class="song-cover-reflect song-cover-reflect-mask" src="${song.cover}">
 				</div>
+				<div class="song-cover-container">
+					<div class="box__face box__face--front" style="background-image:url(${song.cover});" alt="cover"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
 				<div class="song-info-container">
 					<div class="song-info">
 						<strong class="song-title">${song.title}</strong>
@@ -374,37 +443,41 @@ async function renderResults(songs) {
 								: song.artist
 							}
 						</span>
-
-						${song.duration ? `<span class="song-duration">Duración: ${song.duration}</span>` : ""}
+						<div class="song-details">
+							<div>
+								${song.duration ? `<img src="../assets/duration.png">` : ""}
+								${song.duration ? `<span class="song-duration">${song.duration}</span>` : ""}
+							</div>
+							<div>
+								${song.views && song.typeLabel !== "👤 Artista"
+										? `<img src="../assets/view.png">`: ""}
+								${song.views && song.typeLabel !== "👤 Artista"
+										? `<span class="song-views">${formatNumber(song.views)}</span>`: ""}
+							</div>
+						</div>
 
 						${
 							song.typeLabel === "👤 Artista" && song.followers
 								? `<span class="song-followers">👥 Followers: ${formatNumber(song.followers)}</span>`
 								: ""
-						}
-
-						${
-							song.views && song.typeLabel !== "👤 Artista"
-								? `<span class="song-views">YouTube views: ${formatNumber(song.views)}</span>`
-								: ""
-						}
+						}					
 					</div>
 					<div class="song-links">
-							${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank" rel="noopener"><img src="../assets/spotify.png" class="linkIcon"><div class="linkText" class="linkText">Spotify</div></a>` : ""}
-							${song.links.youtubeMusic ? `<a href="${song.links.youtubeMusic}" target="_blank" rel="noopener"><img src="../assets/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>` : ""}
-							${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank" rel="noopener"><img src="../assets/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>` : ""}
-							${song.links.appleMusic ? `<a href="${song.links.appleMusic}" target="_blank" rel="noopener"><img src="../assets/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>` : ""}
-							${song.links.deezer ? `<a href="${song.links.deezer}" target="_blank" rel="noopener"><img src="../assets/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>` : ""}
-							${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank" rel="noopener"><img src="../assets/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>` : ""}
-							${song.links.tidal ? `<a href="${song.links.tidal}" target="_blank" rel="noopener"><img src="../assets/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>` : ""}
-							${song.links.amazonMusic ? `<a href="${song.links.amazonMusic}" target="_blank" rel="noopener"><img src="../assets/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>` : ""}
-							${song.links.pandora ? `<a href="${song.links.pandora}" target="_blank" rel="noopener"><img src="../assets/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>` : ""}
-							${song.links.bandcamp ? `<a href="${song.links.bandcamp}" target="_blank" rel="noopener"><img src="../assets/bandcamp.png" class="linkIcon"><div class="linkText">Bandcamp</div></a>` : ""}
-							${song.links.napster ? `<a href="${song.links.napster}" target="_blank" rel="noopener"><img src="../assets/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>` : ""}
-							${song.links.anghami ? `<a href="${song.links.anghami}" target="_blank" rel="noopener"><img src="../assets/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>` : ""}
-							${song.links.boomplay ? `<a href="${song.links.boomplay}" target="_blank" rel="noopener"><img src="../assets/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>` : ""}
-							${song.links.audiomack ? `<a href="${song.links.audiomack}" target="_blank" rel="noopener"><img src="../assets/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>` : ""}
-							${song.links.yandex ? `<a href="${song.links.yandex}" target="_blank" rel="noopener"><img src="../assets/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>` : ""}
+							${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText" class="linkText">Spotify</div></a>` : ""}
+							${song.links.youtubeMusic ? `<a href="${song.links.youtubeMusic}" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>` : ""}
+							${song.links.youtube ? `<a href="${song.links.youtube}" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>` : ""}
+							${song.links.appleMusic ? `<a href="${song.links.appleMusic}" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>` : ""}
+							${song.links.deezer ? `<a href="${song.links.deezer}" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>` : ""}
+							${song.links.soundcloud ? `<a href="${song.links.soundcloud}" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>` : ""}
+							${song.links.tidal ? `<a href="${song.links.tidal}" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>` : ""}
+							${song.links.amazonMusic ? `<a href="${song.links.amazonMusic}" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>` : ""}
+							${song.links.pandora ? `<a href="${song.links.pandora}" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>` : ""}
+							${song.links.bandcamp ? `<a href="${song.links.bandcamp}" target="_blank" rel="noopener"><img src="../assets/odesliServices/bandcamp.png" class="linkIcon"><div class="linkText">Bandcamp</div></a>` : ""}
+							${song.links.napster ? `<a href="${song.links.napster}" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>` : ""}
+							${song.links.anghami ? `<a href="${song.links.anghami}" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>` : ""}
+							${song.links.boomplay ? `<a href="${song.links.boomplay}" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>` : ""}
+							${song.links.audiomack ? `<a href="${song.links.audiomack}" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>` : ""}
+							${song.links.yandex ? `<a href="${song.links.yandex}" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>` : ""}
 					</div>
 				</div>
 			`;
@@ -413,6 +486,7 @@ async function renderResults(songs) {
 
 		results.appendChild(card);
 	});
+	initDisksPerspectiveListener();
 }
 
 
