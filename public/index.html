@@ -15,14 +15,14 @@
 			<label for="engine">Engine:</label>
 			<select id="engine" name="engine">
 				<option value="">-- Selecciona una opción --</option>
-				<option value="spotify">Spotify</option>
+				<option value="spotify" selected>Spotify</option>
 				<option value="youtube">Youtube</option>
 				<option value="soundCloud">SoundCloud</option>
 			</select>
 			<label for="searchType">Type:</label>
 			<select id="searchType" name="searchType">
 				<option value="">-- Selecciona una opción --</option>
-				<option value="track">Song</option>
+				<option value="track" selected>Song</option>
 				<option value="album">Album</option>
 				<option value="artist">Artist</option>
 			</select>
@@ -37,7 +37,567 @@
 	</header>
 
 	<main>
-		<div id="results"></div>
+		<div id="results"><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b273ca7cad7b1dd4996d643433ef">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273ca7cad7b1dd4996d643433ef);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture4.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.904%, white -99.9042%, transparent -19.9042%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">The Happy Song</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/6Xb4ezwoAQC4516kI89nWz" target="_blank" rel="noopener">Imogen Heap</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">2:37</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">16.425.681</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/6snoOAATGyud5oaIT9gwws" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=CTbZiwrFz4A" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=CTbZiwrFz4A" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/1614848076?i=1614848077&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/1689221997" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/imogenheap/thehappysong?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/221430020" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B09VTGN8TK?trackAsin=B09VTGLVXB" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:30595707" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							<a href="https://play.napster.com/track/tra.240786487" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/1046592005?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/28142958" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/imogen-heap/the-happy-song" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							<a href="https://music.yandex.ru/track/64790004" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b27394fb47698a5dd6f6f7509578">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b27394fb47698a5dd6f6f7509578);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture4.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.906%, white -99.906%, transparent -19.906%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">The Happy Dictator (feat. Sparks)</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/3AA28KZvwAUcZuOKwyblJQ" target="_blank" rel="noopener">Gorillaz</a>, <a href="https://open.spotify.com/artist/7pwjGKaqnfkvS7eQbHaqyH" target="_blank" rel="noopener">Sparks</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">4:44</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">3.420.102</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/50BLjPGDh9DjVp4qwwyG6d" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=MG_npaLydKg" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=MG_npaLydKg" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/1837237742?i=1837237767&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/3546683861" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/gorillaz/the-happy-dictator-feat-sparks?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/459322336" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B0FPJLJYN2?trackAsin=B0FPJHX8M7" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:172308675" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							
+							
+							
+							<a href="https://audiomack.com/song/gorillaz/the-happy-dictator-feat-sparks-3692673" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b2736fd8be8b5bdf8ac462a1c369">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b2736fd8be8b5bdf8ac462a1c369);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture3.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.902%, white -99.9024%, transparent -19.9024%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Face</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/4luZExkmgn39Kj5XsYWria" target="_blank" rel="noopener">Jagwar Twin</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">2:49</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">16.110.035</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/3YYTCTlM2K3GoRz3X3d4ES" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=VrQju5rBPMg" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=VrQju5rBPMg" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/1752579368?i=1752579375&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/2851395932" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/rojina-yosefzadeh/happy-face-jagwar-twin?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/369957308" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B0D7BVWM3M?trackAsin=B0D7B2XHZN" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:75398628" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							<a href="https://play.napster.com/track/tra.540467147" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/1164255347?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/54991021" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/jagwar-twin/happy-face" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							<a href="https://music.yandex.ru/track/80039778" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b27381d29c9fb8c8ae951f48e54d">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b27381d29c9fb8c8ae951f48e54d);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture2.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.904%, white -99.9037%, transparent -19.9037%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Birthday</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/76whng5pl9msPkkjFUtWYn" target="_blank" rel="noopener">Tempo</a>, <a href="https://open.spotify.com/artist/2oQX8QiMXOyuqbcZEFsZfm" target="_blank" rel="noopener">El Alfa</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">2:35</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">16.807.186</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/0XkGuccSfq43beHberZYKz" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=jfL7K-1BYLY" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=jfL7K-1BYLY" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/1619670328?i=1619670329&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/1719660507" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/ak15music/el-alfa-el-jefe-x-tempo-happy-birthday" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/224826927" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B09XWF1B5Q?trackAsin=B09XWCTM3H" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							
+							
+							<a href="https://play.napster.com/track/tra.629873232" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/1049013836?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/88508877" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/yosoytempo/happy-birthday-1" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							<a href="https://music.yandex.ru/track/104019070" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b27372649ad8e79d1e8bdd54c929">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b27372649ad8e79d1e8bdd54c929);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture3.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.908%, white -99.9083%, transparent -19.9083%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Together</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/2VIoWte1HPDbZ2WqHd2La7" target="_blank" rel="noopener">The Turtles</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">2:56</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">10.504.612</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/1JO1xLtVc8mWhIoE3YaCL0" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=uzAWDG3ZieM" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=uzAWDG3ZieM" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/79087172?i=79087150&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/2043943" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/theturtles-sc/happy-together-1?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/12445712" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B000R04LI0?trackAsin=B000QP4IBG" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							
+							
+							<a href="https://play.napster.com/track/tra.2405224" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/1107809989?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/20682574" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/back-lot-music/happy-together-1" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							<a href="https://music.yandex.ru/track/1124102" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b273c409c9181a5fab91f6051f5b">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273c409c9181a5fab91f6051f5b);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture1.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.901%, white -99.9011%, transparent -19.9011%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy - From "Despicable Me 2"</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/2RdwBSPQiwcmiDo9kixcl8" target="_blank" rel="noopener">Pharrell Williams</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">3:53</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">156.796.769</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/60nZcImufyMA1MKQY3dcCH" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=C7dPqrmDWxs" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=C7dPqrmDWxs" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/863835302?i=863835363&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/701326562" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/pharrellwilliams-official/happy-from-despicable-me-2?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/49754041" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B076YSK8CS?trackAsin=B076YT2CBT" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:19638506" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							<a href="https://play.napster.com/track/tra.139154582" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/53437042?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/14054923" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/pharrellwilliams/happy-from-despicable-me-2" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b273b8e072ca95df6dc435b1484f">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273b8e072ca95df6dc435b1484f);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture2.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.909%, white -99.9095%, transparent -19.9095%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Nation</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/5ksRONqssB7BR161NTtJAm" target="_blank" rel="noopener">Ace of Base</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">4:15</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">217.639.582</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/7yCF65vpc7sUwPjftI0iFb" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=HWjCStB6k4o" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=HWjCStB6k4o" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/1682504109?i=1682506242&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/94676704" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/aceofbaseofficial/04-ace-of-base-happy-nation?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/38963631" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B00SG7L0JE?trackAsin=B00SG7L7IS" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:9009537" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							<a href="https://play.napster.com/track/tra.135610067" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/1104942855?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/15438623" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/Nostalgiapersian/happy-nation" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							<a href="https://music.yandex.ru/track/2564242" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b273835ed5fb9b70f46c3177ffde">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b273835ed5fb9b70f46c3177ffde);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture4.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.902%, white -99.9018%, transparent -19.9018%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Birthday</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/7guDJrEfX3qb6FEbdPA5qi" target="_blank" rel="noopener">Stevie Wonder</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">5:55</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">19.131.186</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/3cJSJTrEKNfm1TmoswErkW" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=RcVZfJO01NI" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=RcVZfJO01NI" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							<a href="https://geo.music.apple.com/us/album/_/1440820988?i=1440821356&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/538709682" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/stevie-wonder-official/happy-birthday?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/2527413" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B000V63BWW?trackAsin=B000V66UUM" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:59500" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							<a href="https://play.napster.com/track/tra.324177718" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/101007336?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/3186574" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							<a href="https://audiomack.com/song/steviewonder/happy-birthday-6111180" target="_blank" rel="noopener"><img src="../assets/odesliServices/audiomack.png" class="linkIcon"><div class="linkText">Audiomack</div></a>
+							<a href="https://music.yandex.ru/track/797518" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b2730cc8b8a3fcd0cd9d284ca105">
+				</div>
+				<div class="song-cover-container" style="transform: rotateY(0deg) rotateX(0deg);">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b2730cc8b8a3fcd0cd9d284ca105);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture1.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -119.907%, white -99.9068%, transparent -19.9068%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Birthday to You</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/40XVsFgLf7yGKaC6Yiu7ff" target="_blank" rel="noopener">Happy Birthday TA</a>, <a href="https://open.spotify.com/artist/4POPMvpDC7yGtZZ1agfhT0" target="_blank" rel="noopener">Torsten Abrolat</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">0:44</span>
+							</div>
+							<div>
+								<img src="../assets/view.png">
+								<span class="song-views">81.839</span>
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/6lNTl7eExy6VS8rnD3O8re" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							<a href="https://music.youtube.com/watch?v=dL0rtJP1uJc" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt-music.png" class="linkIcon"><div class="linkText">YouTube Music</div></a>
+							<a href="https://www.youtube.com/watch?v=dL0rtJP1uJc" target="_blank" rel="noopener"><img src="../assets/odesliServices/yt.png" class="linkIcon"><div class="linkText">Youtube</div></a>
+							
+							<a href="https://www.deezer.com/track/499133072" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							<a href="https://soundcloud.com/happybirthdayta/happy-birthday-to-you-1?utm_medium=api&amp;utm_campaign=social_sharing&amp;utm_source=id_314547" target="_blank" rel="noopener"><img src="../assets/odesliServices/soundcloud.png" class="linkIcon"><div class="linkText">SoundCloud</div></a>
+							<a href="https://listen.tidal.com/track/88712199" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B07D158D3Y?trackAsin=B07D143Z3P" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							<a href="https://www.pandora.com/TR:20248943" target="_blank" rel="noopener"><img src="../assets/odesliServices/pandora.png" class="linkIcon"><div class="linkText">Pandora</div></a>
+							
+							<a href="https://play.napster.com/track/tra.602295449" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							<a href="https://play.anghami.com/song/62779224?refer=linktree" target="_blank" rel="noopener"><img src="../assets/odesliServices/anghami.png" class="linkIcon"><div class="linkText">Anghami</div></a>
+							<a href="https://www.boomplay.com/songs/31581289" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							
+							<a href="https://music.yandex.ru/track/45382371" target="_blank" rel="noopener"><img src="../assets/odesliServices/yandex.png" class="linkIcon"><div class="linkText">Yandex</div></a>
+					</div>
+				</div>
+			</div><div class="song-card">
+				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="https://i.scdn.co/image/ab67616d0000b2734585f00fcf76dbfe848fcdff">
+				</div>
+				<div class="song-cover-container">
+					<div class="box__face box__face--front" style="background-image:url(https://i.scdn.co/image/ab67616d0000b2734585f00fcf76dbfe848fcdff);" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture1.png"></div>
+					<div class="box__face box__face--reflection" style="mask-image: linear-gradient(135deg, transparent -120%, white -100%, transparent -20%);"></div>
+					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
+					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
+					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
+					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
+					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>
+					<div class="box__face box__faceSub--bottom"><img class="texture textureSubBottom" src="../assets/textures/sub.png"></div>
+				</div>
+				
+				<div class="song-info-container">
+					<div class="song-info">
+						<strong class="song-title">Happy Birthday To You - Classic Version</strong>
+						<span class="song-artist">
+							<a href="https://open.spotify.com/artist/4yjDVfayc6bIBLuyDWuw5W" target="_blank" rel="noopener">Happy Birthday Songs</a>
+						</span>
+						<div class="song-details">
+							<div>
+								<img src="../assets/duration.png">
+								<span class="song-duration">0:33</span>
+							</div>
+							<div>
+								
+								
+							</div>
+						</div>
+
+											
+					</div>
+					<div class="song-links">
+							<a href="https://open.spotify.com/track/2pW5kNCx133MWWirxegvng" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText">Spotify</div></a>
+							
+							
+							<a href="https://geo.music.apple.com/us/album/_/1551862833?i=1551863153&amp;mt=1&amp;app=music&amp;ls=1&amp;at=1000lHKX&amp;ct=api_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener"><img src="../assets/odesliServices/apple.png" class="linkIcon"><div class="linkText">Apple Music</div></a>
+							<a href="https://www.deezer.com/track/3223043661" target="_blank" rel="noopener"><img src="../assets/odesliServices/deezer.png" class="linkIcon"><div class="linkText">Deezer</div></a>
+							
+							<a href="https://listen.tidal.com/track/173850558" target="_blank" rel="noopener"><img src="../assets/odesliServices/tidal.png" class="linkIcon"><div class="linkText">Tidal</div></a>
+							<a href="https://music.amazon.com/albums/B08WNP92YT?trackAsin=B08WNBH3GY" target="_blank" rel="noopener"><img src="../assets/odesliServices/amazon.png" class="linkIcon"><div class="linkText">Amazon Music</div></a>
+							
+							
+							<a href="https://play.napster.com/track/tra.560624184" target="_blank" rel="noopener"><img src="../assets/odesliServices/napster.png" class="linkIcon"><div class="linkText">Napster</div></a>
+							
+							<a href="https://www.boomplay.com/songs/130290266" target="_blank" rel="noopener"><img src="../assets/odesliServices/boomplay.png" class="linkIcon"><div class="linkText">Boomplay</div></a>
+							
+							
+					</div>
+				</div>
+			</div></div>
 	</main>
 
 	<script src="../js/main.js" defer></script>

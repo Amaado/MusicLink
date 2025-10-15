@@ -338,44 +338,184 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ======================================================
 	// DISKS PERSPECTIVE
 	// ======================================================
-	function initDisksPerspectiveListener() {
-		const cards = document.querySelectorAll('.song-card');
+function initDisksPerspectiveListener() {
+	const cards = document.querySelectorAll('.song-card');
 
-		cards.forEach(card => {
-			const scene = card.querySelector('.song-cover-container');
-			const faceFront = scene.querySelector('.box__face--front');
-			const reflectBlack = card.querySelector('.song-cover-reflect-black');
-			const reflect = card.querySelector('.song-cover-reflect');
-			if (!scene) return; // seguridad
+	cards.forEach(card => {
+		const scene = card.querySelector('.song-cover-container');
+		const faceFront = scene?.querySelector('.box__face--front');
+		const reflectBlack = card.querySelector('.song-cover-reflect-black');
+		const reflect = card.querySelector('.song-cover-reflect');
+		const reflection = card.querySelector('.box__face--reflection');
+		if (!scene || !reflection) return;
 
-			// Elimina posibles listeners previos (evita duplicados)
-			card.onmousemove = null;
-			card.onmouseleave = null;
+		// 🧱 Inicializa el degradado de arranque
+		const initialGradient = `linear-gradient(135deg, transparent -120%, white -100%, transparent -20%)`;
+		reflection.style.webkitMaskImage = initialGradient;
+		reflection.style.maskImage = initialGradient;
 
-			card.addEventListener('mousemove', (e) => {
-				faceFront.classList.add("active");
-				reflectBlack.classList.add("active");
-				reflect.classList.add("active");
+		let targetOffset = -100;
+		let currentOffset = -100;
+		let animatingMask = false;
 
-				const rect = card.getBoundingClientRect();
-				const x = e.clientX - rect.left; 
-				const y = e.clientY - rect.top;
+		let targetShadowX = 0;
+		let targetShadowY = 0;
+		let currentShadowX = 0;
+		let currentShadowY = 0;
+		let animatingShadow = false;
+		let currentShadowOpacity = 0;
+		let targetShadowOpacity = 0;
+		let targetShadowBlur = 0;
+		let currentShadowBlur = 0;
 
-				const rotateY = ((x / rect.width) - 0.5) * 35;
-				const rotateX = ((y / rect.height) - 0.5) * -35;
+		// 🔁 Animación del degradado
+		function animateMask() {
+			if (!animatingMask) return;
+			currentOffset += (targetOffset - currentOffset) * 0.1;
+			const start = currentOffset - 20;
+			const mid = currentOffset;
+			const end = currentOffset + 80;
+			const gradient = `linear-gradient(135deg, transparent ${start}%, white ${mid}%, transparent ${end}%)`;
+			reflection.style.webkitMaskImage = gradient;
+			reflection.style.maskImage = gradient;
 
-				scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-			});
+			if (Math.abs(targetOffset - currentOffset) > 0.1) {
+				requestAnimationFrame(animateMask);
+			} else {
+				animatingMask = false;
+			}
+		}
 
-			card.addEventListener('mouseleave', () => {
-				faceFront.classList.remove("active");
-				reflectBlack.classList.remove("active");
-				reflect.classList.remove("active");
-				scene.style.transform = 'rotateY(0deg) rotateX(0deg)';
-			});
+		// 🔁 Animación del box-shadow
+		function animateShadow() {
+			if (!animatingShadow) return;
+
+			currentShadowX += (targetShadowX - currentShadowX) * 0.12;
+			currentShadowY += (targetShadowY - currentShadowY) * 0.12;
+			currentShadowOpacity += (targetShadowOpacity - currentShadowOpacity) * 0.12;
+			currentShadowBlur += (targetShadowBlur - currentShadowBlur) * 0.12;
+
+			const shadow = `${currentShadowX.toFixed(1)}px ${currentShadowY.toFixed(1)}px ${currentShadowBlur.toFixed(1)}px rgba(0,0,0,${currentShadowOpacity.toFixed(2)})`;
+			if (faceFront) faceFront.style.boxShadow = shadow;
+
+			if (
+				Math.abs(targetShadowX - currentShadowX) > 0.5 ||
+				Math.abs(targetShadowY - currentShadowY) > 0.5 ||
+				Math.abs(targetShadowOpacity - currentShadowOpacity) > 0.01 ||
+				Math.abs(targetShadowBlur - currentShadowBlur) > 0.5
+			) {
+				requestAnimationFrame(animateShadow);
+			} else {
+				animatingShadow = false;
+			}
+		}
+
+
+
+		// 🧭 Movimiento del ratón
+		card.addEventListener('mousemove', (e) => {
+			faceFront?.classList.add("active");
+			reflectBlack?.classList.add("active");
+			reflect?.classList.add("active");
+
+			const rect = card.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
+
+			// 🎚 Rotación 3D
+			const rotateY = ((x / rect.width) - 0.5) * 35;
+			const rotateX = ((y / rect.height) - 0.5) * -35;
+			scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+
+			// 🎨 Degradado dinámico
+			targetOffset = ((x / rect.width) - 0.5) * 200;
+			if (!animatingMask) {
+				animatingMask = true;
+				animateMask();
+			}
+
+			// 💡 Sombra dinámica tipo espejo (asimétrica en eje Y + opacidad variable)
+			const relX = (x / rect.width - 0.5) * 2; // -1 a 1
+			const relY = (y / rect.height - 0.5) * 2; // -1 (arriba) a 1 (abajo)
+
+			const maxX = 50;
+			const maxYUp = 12;
+			const maxYDown = 20;
+
+			targetShadowX = relX * -maxX;
+			targetShadowY = relY < 0 ? -relY * maxYUp : -relY * maxYDown;
+
+			// 🎨 Control de opacidad y blur (más difuso y tenue en zonas altas o extremas)
+			const minOpacity = 0.25;
+			const maxOpacity = 0.4;
+			const minBlur = 10;
+			const maxBlur = 25;
+
+			const baseX = relX < 0 ? 0.55 : 0.8; // cambia el 0.6 por el valor que quieras a la izquierda
+			const xFactor = baseX - Math.abs(relX);
+			//console.log("xFactor: "+xFactor);
+			const yFactorOpacity = 1.3 + Math.min(-relY, 0);
+			const yFactorBlur = 1.35 + Math.min(-relY, 0);
+			const yWeight = Math.max(0, Math.min(1, xFactor));
+
+			const combinedFactorOpacity = xFactor * (1 - yWeight) + yFactorOpacity * yWeight;
+			const combinedFactorBlur = xFactor * (1 - yWeight) + yFactorBlur * yWeight;
+
+			// 🔹 Opacidad dinámica
+			targetShadowOpacity = combinedFactorOpacity * (maxOpacity - minOpacity) + minOpacity;
+
+			// 🔹 Desenfoque dinámico (sincronizado con la opacidad)
+			targetShadowBlur = (1 - combinedFactorBlur) * (maxBlur - minBlur) + minBlur;
+
+			if (!animatingShadow) {
+				animatingShadow = true;
+				animateShadow();
+			}
+
 		});
-	}
+
+
+
+		// 🚪 Al salir del área
+		card.addEventListener('mouseleave', () => {
+			faceFront?.classList.remove("active");
+			reflectBlack?.classList.remove("active");
+			reflect?.classList.remove("active");
+
+			scene.style.transition = "transform 0.5s ease";
+			scene.style.transform = 'rotateY(0deg) rotateX(0deg)';
+
+			// 🔙 Reinicia degradado
+			targetOffset = -100;
+			if (!animatingMask) {
+				animatingMask = true;
+				animateMask();
+			}
+
+			// 🔙 Reinicia sombra al centro (sin sombra direccional)
+			targetShadowX = 0;
+			targetShadowY = 0;
+			targetShadowOpacity = 0;
+			targetShadowBlur = 0;
+			if (!animatingShadow) {
+				animatingShadow = true;
+				animateShadow();
+			}
+
+			setTimeout(() => {
+				scene.style.transition = "";
+				faceFront.style.transition = "";
+			}, 500);
+		});
+
+		// 💡 Limpieza previa de listeners
+		card.onmousemove = null;
+		card.onmouseleave = null;
+	});
+}
+
 initDisksPerspectiveListener();
+
 
 /*
 function initDisksPerspective() {
@@ -412,15 +552,17 @@ async function renderResults(songs) {
 		}else{
 			card.innerHTML = `
 				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
-					<div class="song-cover-reflect-black song-cover-reflect-mask"></div>
-					<img class="song-cover-reflect song-cover-reflect-mask" src="${song.cover}">
+					<div class="song-cover-reflect-black"></div>
+					<img class="song-cover-reflect" src="${song.cover}">
 				</div>
 				<div class="song-cover-container">
 					<div class="box__face box__face--front" style="background-image:url(${song.cover});" alt="cover"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture${Math.floor(Math.random()*4)+1}.png"></div>
+					<div class="box__face box__face--reflection"></div>
 					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
 					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
 					<div class="box__face box__face--top"><img class="texture textureTop" src="../assets/textures/cdTop.png"></div>
-					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTop.png"></div>
+					<div class="box__face box__face--bottom"><img class="texture textureBottom" src="../assets/textures/cdTopReverse.png"></div>
 					<div class="box__face box__faceSub--front"><img class="texture textureSubFront" src="../assets/textures/subBrightRight.png"></div>
 					<div class="box__face box__faceSub--right"><img class="texture textureSubRight" src="../assets/textures/subBrightLeft.png"></div>
 					<div class="box__face box__faceSub--top"><img class="texture textureSubTop" src="../assets/textures/sub.png"></div>

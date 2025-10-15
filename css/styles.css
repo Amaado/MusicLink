@@ -73,13 +73,14 @@ main{
     gap: 25px;
     align-items: center;
     justify-content: left;
-    background-color: rgba(122, 78, 78, 0.808);
+    background-color: rgba(207, 207, 207, 0.651);
     width: 90%;
     height: 150px;
     padding: 20px;
-    padding-left: 28px;
     margin-top: 30px;
     overflow: hidden;
+
+    /*TODO: height:170px*/
 }
 
 .song-info-container{
@@ -97,6 +98,7 @@ main{
     gap: 5px;
     width: auto;
     height: 100%;
+    z-index: 1;
 }
 
 .song-title{
@@ -188,13 +190,15 @@ main{
   background-position: center;
   background-size: cover;
   transform-style: preserve-3d;
+
+  will-change: transform;
 }
 
 /* Caras del cubo */
 .box__face--front  {
   transform: translateZ(55px);
   box-shadow: 0px 0px 0px rgba(0,0,0,0);
-  transition: box-shadow 0.5s ease;
+  will-change: transform, opacity;
 }
 .box__face--front.active{
   box-shadow: 5px 5px 15px rgba(0,0,0,.25);
@@ -240,19 +244,6 @@ main{
   background: rgba(255, 115, 0, 0);
 }
 
-.box__face {
-  position: absolute;
-  width: 110px;
-  height: 110px;
-  font-size: 40px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 110px;
-
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-}
 .box__faceSub--front  {
   transform: translateZ(58px) scaleX(0.075) translateX(-790px);
 }
@@ -270,7 +261,6 @@ main{
 .song-cover-reflect-wrapper{
     transform: rotateZ(180deg) translate(-65px, -128px) scale(2);
     perspective: 200px;
-
 }
 .song-cover-reflect-black{
   position: absolute;
@@ -281,12 +271,19 @@ main{
   transform-origin: top;
   transform: rotateX(-70deg) translateX(-62px) translateY(111px);
   transform-style: preserve-3d;
-  transition: 0.3s transform ease, 0.3s opacity ease;
+  transition: 0.5s transform ease, 0.3s opacity ease;
   opacity: 1;
+  -webkit-mask-image: 
+    radial-gradient(circle at bottom right, black 70%, transparent 95%);
+    /*
+    para trozo negro!
+    radial-gradient(circle at bottom left, black 70%, transparent 95%)*/
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 .song-cover-reflect-black.active{
-  transform: rotateX(-70deg) translateX(-70px) translateY(80px);
-  opacity: 0.5;
+  transform: rotateX(-70deg) translateX(-70px) translateY(20px);
+  opacity: 0.3;
 }
 .song-cover-reflect{
   position: absolute;
@@ -296,17 +293,38 @@ main{
   transform-origin: top;
   transform: rotateX(-70deg) translateX(-70px) translateY(110px);
   transform-style: preserve-3d;
-  transition: 0.3s transform ease, 0.5s opacity ease;
+  transition: 0.5s transform ease, 0.3s opacity ease;
   opacity: 1;
+  -webkit-mask-image: 
+    radial-gradient(circle at bottom right, black 70%, transparent 95%);
+    /*
+    para trozo negro!
+    radial-gradient(circle at bottom left, black 70%, transparent 95%)*/
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 .song-cover-reflect.active{
-  transform: rotateX(-70deg) translateX(-70px) translateY(80px);
-    opacity: 0.5;
+  transform: rotateX(-70deg) translateX(-70px) translateY(20px);
+    opacity: 0.3;
 }
 .song-cover-reflect-filter{
-  opacity: 0.3;
+  opacity: 0.4;
   filter: blur(1.5px);
 }
-.song-cover-reflect-mask{
+
+.box__face--reflection{
+  transform: translateZ(55px);
+  background-color: #ffffff70;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0.3;
+}
+
+.box__face--scratches-wrapper{
+  transform: translateZ(55px);
+}
+.box__face--scratches{
+  opacity: 0.3;
+  mix-blend-mode: color-burn;
 
 }
