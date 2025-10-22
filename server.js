@@ -212,21 +212,31 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Servir carpetas estáticas específicas
-app.use("/js", express.static(path.join(__dirname, "js")));
-app.use("/css", express.static(path.join(__dirname, "css")));
-app.use("/assets", express.static(path.join(__dirname, "assets")));
-app.use("/keys", express.static(path.join(__dirname, "keys"))); // opcional, si necesitas
-app.use(express.static(path.join(__dirname, "public"))); // principal (index.html)
+// Middleware de cacheo para assets estáticos
+const staticOptions = {
+  maxAge: "7d", // cachea por 7 días
+  etag: true,
+  setHeaders: (res, filePath) => {
+    // Fuerza tipos MIME correctos y CORS para assets (útil en 3D)
+    if (filePath.endsWith(".js")) res.setHeader("Content-Type", "application/javascript");
+    if (filePath.endsWith(".css")) res.setHeader("Content-Type", "text/css");
+    if (filePath.match(/\.(png|jpg|jpeg|gif|webp|svg)$/))
+      res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+  },
+};
+
+// Servir carpetas con cache habilitada
+app.use("/js", express.static(path.join(__dirname, "js"), staticOptions));
+app.use("/css", express.static(path.join(__dirname, "css"), staticOptions));
+app.use("/assets", express.static(path.join(__dirname, "assets"), staticOptions));
+
+// ⚠️ Nunca sirvas claves públicamente en producción
+// app.use("/keys", express.static(path.join(__dirname, "keys"))); 
+
+// Servir carpeta principal con cache (para index.html y otros)
+app.use(express.static(path.join(__dirname, "public"), staticOptions));
 
 // ⚠️ ESTA RUTA SIEMPRE AL FINAL ⚠️
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// ================================
-// 4️⃣ Iniciar servidor
-// ================================
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
