@@ -6,8 +6,6 @@ import express from "express";
 import fetch from "node-fetch";
 import fs from "fs";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
 
 const app = express();
 const PORT = process.env.PORT || 4000; // Render asigna el puerto automáticamente
@@ -204,26 +202,31 @@ app.get("/youtube-search", async (req, res) => {
 });
 
 
-// ----------------------------------------------------
-// 3️⃣ Servir frontend (HTML, CSS, JS) desde /public
-// ----------------------------------------------------
+// ================================
+// 3️⃣ Servir archivos estáticos (Frontend)
+// ================================
+
+import path from "path";
+import { fileURLToPath } from "url";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, "public")));
+// Servir carpetas estáticas específicas
+app.use("/js", express.static(path.join(__dirname, "js")));
+app.use("/css", express.static(path.join(__dirname, "css")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+app.use("/keys", express.static(path.join(__dirname, "keys"))); // opcional, si necesitas
+app.use(express.static(path.join(__dirname, "public"))); // principal (index.html)
 
-// Si ninguna ruta coincide (útil para SPAs o raíz "/")
+// ⚠️ ESTA RUTA SIEMPRE AL FINAL ⚠️
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.use("/js", express.static(path.join(__dirname, "js")));
-app.use("/css", express.static(path.join(__dirname, "css")));
-app.use("/assets", express.static(path.join(__dirname, "assets")));
-
-// ----------------------------------------------------
-// 5️⃣ Arrancar servidor (sin HTTPS manual)
-// ----------------------------------------------------
+// ================================
+// 4️⃣ Iniciar servidor
+// ================================
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
