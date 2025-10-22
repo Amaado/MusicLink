@@ -18,6 +18,7 @@ app.use(cors({
   credentials: true
 }));
 
+
 // ----------------------------------------------------
 // 2️⃣ Leer claves del archivo local
 // ----------------------------------------------------
@@ -199,6 +200,21 @@ app.get("/youtube-search", async (req, res) => {
     res.status(500).json({ error: "Error interno al buscar en YouTube" });
   }
 });
+
+
+// ----------------------------------------------------
+// 3️⃣ Servir frontend (HTML, CSS, JS) desde /public
+// ----------------------------------------------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "public")));
+
+// Si ninguna ruta coincide (útil para SPAs o raíz "/")
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 
 // ----------------------------------------------------
 // 5️⃣ Arrancar servidor (sin HTTPS manual)
