@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		},
 	};
 
+	// Detecta si está en local o desplegado en Render
+	const API_BASE =
+		window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+			? "http://127.0.0.1:4000"
+			: "https://musiclink-6itn.onrender.com";
+
 	// ======================================================
 	// EVENTO DEL FORMULARIO
 	// ======================================================
@@ -68,22 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
 	// FUNCIÓN PRINCIPAL DE BÚSQUEDA
 	// ======================================================
 	async function search(engine, input, type) {
-	if (engine === "spotify") {
-		return await searchSpotify(input, type);
-	}
+		if (engine === "spotify") {
+			return await searchSpotify(input, type);
+		}
 
-	if (engine === "youtube") {
-		return await searchYouTube(input, type);
-	}
+		if (engine === "youtube") {
+			return await searchYouTube(input, type);
+		}
 
-	results.textContent = `Engine "${engine}" no implementado aún.`;
-	return [];
-}
+		results.textContent = `Engine "${engine}" no implementado aún.`;
+		return [];
+	}
 
 	// 🟢 === FUNCIÓN ORIGINAL AISLADA (sin cambios de lógica) ===
 	async function searchSpotify(input, type) {
 		// 1️⃣ Obtener token desde backend
-		const tokenRes = await fetch("https://127.0.0.1:4000/spotify-token");
+		const tokenRes = await fetch(`${API_BASE}/spotify-token`);
 		const { token } = await tokenRes.json();
 		if (!token) {
 			console.error("❌ No se recibió token desde el backend");
@@ -118,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (youtubeUrl) {
 				const videoId = youtubeUrl.split("v=")[1]?.split("&")[0];
 				if (videoId) {
-					const ytRes = await fetch(`https://127.0.0.1:4000/youtube-stats/${videoId}`);
+					const ytRes = await fetch(`${API_BASE}/youtube-stats/${videoId}`);
 					ytData = await ytRes.json();
 				}
 			}
@@ -161,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					const spotifyUrl = item.external_urls.spotify;
 
 					// 🔹 Llamar al backend para obtener datos del artista
-					const statsRes = await fetch(`https://127.0.0.1:4000/spotify-artist/${artistId}`);
+					const statsRes = await fetch(`${API_BASE}/spotify-artist/${artistId}`);
 					const stats = await statsRes.json();
 
 					return {
@@ -198,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function searchYouTube(input, type) {
 		try {
 			// 1️⃣ Llamar al backend local (ya devuelve todo: snippet + stats + duration)
-			const res = await fetch(`https://127.0.0.1:4000/youtube-search?q=${encodeURIComponent(input)}`);
+			const res = await fetch(`${API_BASE}/youtube-search?q=${encodeURIComponent(input)}`);
 			const data = await res.json();
 
 			console.log("🔎 Respuesta YouTube:", data);
@@ -280,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			return {};
 		}*/
 		try {
-			const res = await fetch(`https://127.0.0.1:4000/odesli?url=${encodeURIComponent(url)}`);
+			const res = await fetch(`${API_BASE}/odesli?url=${encodeURIComponent(url)}`);
 			if (!res.ok) {
 				console.warn("⚠️ Odesli devolvió error:", res.status);
 				return {};
@@ -338,226 +344,226 @@ document.addEventListener('DOMContentLoaded', () => {
 	// ======================================================
 	// DISKS PERSPECTIVE
 	// ======================================================
-function initDisksPerspectiveListener() {
-	const cards = document.querySelectorAll('.song-card');
+	function initDisksPerspectiveListener() {
+		const cards = document.querySelectorAll('.song-card');
 
-	cards.forEach(card => {
-		const scene = card.querySelector('.song-cover-container');
-		const faceFront = scene?.querySelector('.box__face--front');
-		const reflectBlack = card.querySelector('.song-cover-reflect-black');
-		const reflect = card.querySelector('.song-cover-reflect');
-		const reflection = card.querySelector('.box__face--reflection');
-		if (!scene || !reflection) return;
+		cards.forEach(card => {
+			const scene = card.querySelector('.song-cover-container');
+			const faceFront = scene?.querySelector('.box__face--front');
+			const reflectBlack = card.querySelector('.song-cover-reflect-black');
+			const reflect = card.querySelector('.song-cover-reflect');
+			const reflection = card.querySelector('.box__face--reflection');
+			if (!scene || !reflection) return;
 
-		// 🧱 Inicializa el degradado de arranque
-		const initialGradient = `linear-gradient(135deg, transparent -120%, white -100%, transparent -20%)`;
-		reflection.style.webkitMaskImage = initialGradient;
-		reflection.style.maskImage = initialGradient;
+			// 🧱 Inicializa el degradado de arranque
+			const initialGradient = `linear-gradient(135deg, transparent -120%, white -100%, transparent -20%)`;
+			reflection.style.webkitMaskImage = initialGradient;
+			reflection.style.maskImage = initialGradient;
 
-		let targetOffset = -100;
-		let currentOffset = -100;
-		let animatingMask = false;
+			let targetOffset = -100;
+			let currentOffset = -100;
+			let animatingMask = false;
 
-		let targetShadowX = 0;
-		let targetShadowY = 0;
-		let currentShadowX = 0;
-		let currentShadowY = 0;
-		let animatingShadow = false;
-		let currentShadowOpacity = 0;
-		let targetShadowOpacity = 0;
-		let targetShadowBlur = 0;
-		let currentShadowBlur = 0;
+			let targetShadowX = 0;
+			let targetShadowY = 0;
+			let currentShadowX = 0;
+			let currentShadowY = 0;
+			let animatingShadow = false;
+			let currentShadowOpacity = 0;
+			let targetShadowOpacity = 0;
+			let targetShadowBlur = 0;
+			let currentShadowBlur = 0;
 
-		// 🔁 Animación del degradado
-		function animateMask() {
-			if (!animatingMask) return;
-			currentOffset += (targetOffset - currentOffset) * 0.1;
-			const start = currentOffset - 20;
-			const mid = currentOffset;
-			const end = currentOffset + 80;
-			const gradient = `linear-gradient(135deg, transparent ${start}%, white ${mid}%, transparent ${end}%)`;
-			reflection.style.webkitMaskImage = gradient;
-			reflection.style.maskImage = gradient;
+			// 🔁 Animación del degradado
+			function animateMask() {
+				if (!animatingMask) return;
+				currentOffset += (targetOffset - currentOffset) * 0.1;
+				const start = currentOffset - 20;
+				const mid = currentOffset;
+				const end = currentOffset + 80;
+				const gradient = `linear-gradient(135deg, transparent ${start}%, white ${mid}%, transparent ${end}%)`;
+				reflection.style.webkitMaskImage = gradient;
+				reflection.style.maskImage = gradient;
 
-			if (Math.abs(targetOffset - currentOffset) > 0.1) {
-				requestAnimationFrame(animateMask);
-			} else {
-				animatingMask = false;
-			}
-		}
-
-		// 🔁 Animación del box-shadow
-		function animateShadow() {
-			if (!animatingShadow) return;
-
-			currentShadowX += (targetShadowX - currentShadowX) * 0.12;
-			currentShadowY += (targetShadowY - currentShadowY) * 0.12;
-			currentShadowOpacity += (targetShadowOpacity - currentShadowOpacity) * 0.12;
-			currentShadowBlur += (targetShadowBlur - currentShadowBlur) * 0.12;
-
-			const shadow = `${currentShadowX.toFixed(1)}px ${currentShadowY.toFixed(1)}px ${currentShadowBlur.toFixed(1)}px rgba(0,0,0,${currentShadowOpacity.toFixed(2)})`;
-			if (faceFront) faceFront.style.boxShadow = shadow;
-
-			if (
-				Math.abs(targetShadowX - currentShadowX) > 0.5 ||
-				Math.abs(targetShadowY - currentShadowY) > 0.5 ||
-				Math.abs(targetShadowOpacity - currentShadowOpacity) > 0.01 ||
-				Math.abs(targetShadowBlur - currentShadowBlur) > 0.5
-			) {
-				requestAnimationFrame(animateShadow);
-			} else {
-				animatingShadow = false;
-			}
-		}
-
-
-
-		// 🧭 Movimiento del ratón
-		card.addEventListener('mousemove', (e) => {
-			faceFront?.classList.add("active");
-			reflectBlack?.classList.add("active");
-			reflect?.classList.add("active");
-
-			const rect = card.getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
-
-			// 🎚 Rotación 3D
-			const rotateY = ((x / rect.width) - 0.5) * 35;
-			const rotateX = ((y / rect.height) - 0.5) * -35;
-			scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-
-			// 🎨 Degradado dinámico
-			targetOffset = ((x / rect.width) - 0.5) * 200;
-			if (!animatingMask) {
-				animatingMask = true;
-				animateMask();
+				if (Math.abs(targetOffset - currentOffset) > 0.1) {
+					requestAnimationFrame(animateMask);
+				} else {
+					animatingMask = false;
+				}
 			}
 
-			// 💡 Sombra dinámica tipo espejo (asimétrica en eje Y + opacidad variable)
-			const relX = (x / rect.width - 0.5) * 2; // -1 a 1
-			const relY = (y / rect.height - 0.5) * 2; // -1 (arriba) a 1 (abajo)
+			// 🔁 Animación del box-shadow
+			function animateShadow() {
+				if (!animatingShadow) return;
 
-			const maxX = 50;
-			const maxYUp = 12;
-			const maxYDown = 20;
+				currentShadowX += (targetShadowX - currentShadowX) * 0.12;
+				currentShadowY += (targetShadowY - currentShadowY) * 0.12;
+				currentShadowOpacity += (targetShadowOpacity - currentShadowOpacity) * 0.12;
+				currentShadowBlur += (targetShadowBlur - currentShadowBlur) * 0.12;
 
-			targetShadowX = relX * -maxX;
-			targetShadowY = relY < 0 ? -relY * maxYUp : -relY * maxYDown;
+				const shadow = `${currentShadowX.toFixed(1)}px ${currentShadowY.toFixed(1)}px ${currentShadowBlur.toFixed(1)}px rgba(0,0,0,${currentShadowOpacity.toFixed(2)})`;
+				if (faceFront) faceFront.style.boxShadow = shadow;
 
-			// 🎨 Control de opacidad y blur (más difuso y tenue en zonas altas o extremas)
-			const minOpacity = 0.25;
-			const maxOpacity = 0.4;
-			const minBlur = 10;
-			const maxBlur = 25;
-
-			const baseX = relX < 0 ? 0.55 : 0.8; // cambia el 0.6 por el valor que quieras a la izquierda
-			const xFactor = baseX - Math.abs(relX);
-			//console.log("xFactor: "+xFactor);
-			const yFactorOpacity = 1.3 + Math.min(-relY, 0);
-			const yFactorBlur = 1.35 + Math.min(-relY, 0);
-			const yWeight = Math.max(0, Math.min(1, xFactor));
-
-			const combinedFactorOpacity = xFactor * (1 - yWeight) + yFactorOpacity * yWeight;
-			const combinedFactorBlur = xFactor * (1 - yWeight) + yFactorBlur * yWeight;
-
-			// 🔹 Opacidad dinámica
-			targetShadowOpacity = combinedFactorOpacity * (maxOpacity - minOpacity) + minOpacity;
-
-			// 🔹 Desenfoque dinámico (sincronizado con la opacidad)
-			targetShadowBlur = (1 - combinedFactorBlur) * (maxBlur - minBlur) + minBlur;
-
-			if (!animatingShadow) {
-				animatingShadow = true;
-				animateShadow();
+				if (
+					Math.abs(targetShadowX - currentShadowX) > 0.5 ||
+					Math.abs(targetShadowY - currentShadowY) > 0.5 ||
+					Math.abs(targetShadowOpacity - currentShadowOpacity) > 0.01 ||
+					Math.abs(targetShadowBlur - currentShadowBlur) > 0.5
+				) {
+					requestAnimationFrame(animateShadow);
+				} else {
+					animatingShadow = false;
+				}
 			}
 
+
+
+			// 🧭 Movimiento del ratón
+			card.addEventListener('mousemove', (e) => {
+				faceFront?.classList.add("active");
+				reflectBlack?.classList.add("active");
+				reflect?.classList.add("active");
+
+				const rect = card.getBoundingClientRect();
+				const x = e.clientX - rect.left;
+				const y = e.clientY - rect.top;
+
+				// 🎚 Rotación 3D
+				const rotateY = ((x / rect.width) - 0.5) * 35;
+				const rotateX = ((y / rect.height) - 0.5) * -35;
+				scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+
+				// 🎨 Degradado dinámico
+				targetOffset = ((x / rect.width) - 0.5) * 200;
+				if (!animatingMask) {
+					animatingMask = true;
+					animateMask();
+				}
+
+				// 💡 Sombra dinámica tipo espejo (asimétrica en eje Y + opacidad variable)
+				const relX = (x / rect.width - 0.5) * 2; // -1 a 1
+				const relY = (y / rect.height - 0.5) * 2; // -1 (arriba) a 1 (abajo)
+
+				const maxX = 50;
+				const maxYUp = 12;
+				const maxYDown = 20;
+
+				targetShadowX = relX * -maxX;
+				targetShadowY = relY < 0 ? -relY * maxYUp : -relY * maxYDown;
+
+				// 🎨 Control de opacidad y blur (más difuso y tenue en zonas altas o extremas)
+				const minOpacity = 0.25;
+				const maxOpacity = 0.4;
+				const minBlur = 10;
+				const maxBlur = 25;
+
+				const baseX = relX < 0 ? 0.55 : 0.8; // cambia el 0.6 por el valor que quieras a la izquierda
+				const xFactor = baseX - Math.abs(relX);
+				//console.log("xFactor: "+xFactor);
+				const yFactorOpacity = 1.3 + Math.min(-relY, 0);
+				const yFactorBlur = 1.35 + Math.min(-relY, 0);
+				const yWeight = Math.max(0, Math.min(1, xFactor));
+
+				const combinedFactorOpacity = xFactor * (1 - yWeight) + yFactorOpacity * yWeight;
+				const combinedFactorBlur = xFactor * (1 - yWeight) + yFactorBlur * yWeight;
+
+				// 🔹 Opacidad dinámica
+				targetShadowOpacity = combinedFactorOpacity * (maxOpacity - minOpacity) + minOpacity;
+
+				// 🔹 Desenfoque dinámico (sincronizado con la opacidad)
+				targetShadowBlur = (1 - combinedFactorBlur) * (maxBlur - minBlur) + minBlur;
+
+				if (!animatingShadow) {
+					animatingShadow = true;
+					animateShadow();
+				}
+
+			});
+
+
+
+			// 🚪 Al salir del área
+			card.addEventListener('mouseleave', () => {
+				faceFront?.classList.remove("active");
+				reflectBlack?.classList.remove("active");
+				reflect?.classList.remove("active");
+
+				scene.style.transition = "transform 0.5s ease";
+				scene.style.transform = 'rotateY(0deg) rotateX(0deg)';
+
+				// 🔙 Reinicia degradado
+				targetOffset = -100;
+				if (!animatingMask) {
+					animatingMask = true;
+					animateMask();
+				}
+
+				// 🔙 Reinicia sombra al centro (sin sombra direccional)
+				targetShadowX = 0;
+				targetShadowY = 0;
+				targetShadowOpacity = 0;
+				targetShadowBlur = 0;
+				if (!animatingShadow) {
+					animatingShadow = true;
+					animateShadow();
+				}
+
+				setTimeout(() => {
+					scene.style.transition = "";
+					faceFront.style.transition = "";
+				}, 500);
+			});
+
+			// 💡 Limpieza previa de listeners
+			card.onmousemove = null;
+			card.onmouseleave = null;
 		});
-
-
-
-		// 🚪 Al salir del área
-		card.addEventListener('mouseleave', () => {
-			faceFront?.classList.remove("active");
-			reflectBlack?.classList.remove("active");
-			reflect?.classList.remove("active");
-
-			scene.style.transition = "transform 0.5s ease";
-			scene.style.transform = 'rotateY(0deg) rotateX(0deg)';
-
-			// 🔙 Reinicia degradado
-			targetOffset = -100;
-			if (!animatingMask) {
-				animatingMask = true;
-				animateMask();
-			}
-
-			// 🔙 Reinicia sombra al centro (sin sombra direccional)
-			targetShadowX = 0;
-			targetShadowY = 0;
-			targetShadowOpacity = 0;
-			targetShadowBlur = 0;
-			if (!animatingShadow) {
-				animatingShadow = true;
-				animateShadow();
-			}
-
-			setTimeout(() => {
-				scene.style.transition = "";
-				faceFront.style.transition = "";
-			}, 500);
-		});
-
-		// 💡 Limpieza previa de listeners
-		card.onmousemove = null;
-		card.onmouseleave = null;
-	});
-}
-
-initDisksPerspectiveListener();
-
-
-/*
-function initDisksPerspective() {
-	const cards = document.querySelectorAll('.song-card');
-
-	cards.forEach(card => {
-		const scene = card.querySelector('.song-cover-container');
-		const faceFront = scene.querySelector('.box__face--front');
-		if (!scene) return; // seguridad
-
-		scene.style.transform = `rotateY(90deg) rotateX(0deg)`;
-
-	});
-}
-initDisksPerspective();*/
-
-// ======================================================
-// RENDERIZAR RESULTADOS
-// ======================================================
-async function renderResults(songs) {
-	results.innerHTML = "";
-
-	if (!songs.length) {
-		results.textContent = "No se encontraron resultados.";
-		return;
 	}
 
-	songs.forEach((song) => {
-		const card = document.createElement("div");
-		card.classList.add("song-card");
+	initDisksPerspectiveListener();
 
-		if (song.typeLabel === "artist"){
-			card.classList.add("artist-card");
-		}else{
-			card.innerHTML = `
+
+	/*
+	function initDisksPerspective() {
+		const cards = document.querySelectorAll('.song-card');
+	
+		cards.forEach(card => {
+			const scene = card.querySelector('.song-cover-container');
+			const faceFront = scene.querySelector('.box__face--front');
+			if (!scene) return; // seguridad
+	
+			scene.style.transform = `rotateY(90deg) rotateX(0deg)`;
+	
+		});
+	}
+	initDisksPerspective();*/
+
+	// ======================================================
+	// RENDERIZAR RESULTADOS
+	// ======================================================
+	async function renderResults(songs) {
+		results.innerHTML = "";
+
+		if (!songs.length) {
+			results.textContent = "No se encontraron resultados.";
+			return;
+		}
+
+		songs.forEach((song) => {
+			const card = document.createElement("div");
+			card.classList.add("song-card");
+
+			if (song.typeLabel === "artist") {
+				card.classList.add("artist-card");
+			} else {
+				card.innerHTML = `
 				<div class="song-cover-reflect-wrapper song-cover-reflect-filter">
 					<div class="song-cover-reflect-black"></div>
 					<img class="song-cover-reflect" src="${song.cover}">
 				</div>
 				<div class="song-cover-container">
 					<div class="box__face box__face--front" style="background-image:url(${song.cover});" alt="cover"></div>
-					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture${Math.floor(Math.random()*4)+1}.png"></div>
+					<div class="box__face--scratches-wrapper"><img class="box__face box__face--scratches" src="../assets/textures/diskTexture${Math.floor(Math.random() * 4) + 1}.png"></div>
 					<div class="box__face box__face--reflection"></div>
 					<div class="box__face box__face--right"><img class="texture textureRight" src="../assets/textures/cdRight.png"></div>
 					<div class="box__face box__face--left"><img class="texture textureLeft" src="../assets/textures/sub.png"></div>
@@ -573,17 +579,16 @@ async function renderResults(songs) {
 					<div class="song-info">
 						<strong class="song-title">${song.title}</strong>
 						<span class="song-artist">
-							${
-								Array.isArray(song.artist)
-								? song.artist
-									.map((a) =>
-										a.url
-										? `<a href="${a.url}" target="_blank" rel="noopener">${a.name}</a>`
-										: a.name
-									)
-									.join(", ")
-								: song.artist
-							}
+							${Array.isArray(song.artist)
+						? song.artist
+							.map((a) =>
+								a.url
+									? `<a href="${a.url}" target="_blank" rel="noopener">${a.name}</a>`
+									: a.name
+							)
+							.join(", ")
+						: song.artist
+					}
 						</span>
 						<div class="song-details">
 							<div>
@@ -592,17 +597,16 @@ async function renderResults(songs) {
 							</div>
 							<div>
 								${song.views && song.typeLabel !== "👤 Artista"
-										? `<img src="../assets/view.png">`: ""}
+						? `<img src="../assets/view.png">` : ""}
 								${song.views && song.typeLabel !== "👤 Artista"
-										? `<span class="song-views">${formatNumber(song.views)}</span>`: ""}
+						? `<span class="song-views">${formatNumber(song.views)}</span>` : ""}
 							</div>
 						</div>
 
-						${
-							song.typeLabel === "👤 Artista" && song.followers
-								? `<span class="song-followers">👥 Followers: ${formatNumber(song.followers)}</span>`
-								: ""
-						}					
+						${song.typeLabel === "👤 Artista" && song.followers
+						? `<span class="song-followers">👥 Followers: ${formatNumber(song.followers)}</span>`
+						: ""
+					}					
 					</div>
 					<div class="song-links">
 							${song.links.spotify ? `<a href="${song.links.spotify}" target="_blank" rel="noopener"><img src="../assets/odesliServices/spotify.png" class="linkIcon"><div class="linkText" class="linkText">Spotify</div></a>` : ""}
@@ -624,12 +628,12 @@ async function renderResults(songs) {
 				</div>
 			`;
 
-		}
+			}
 
-		results.appendChild(card);
-	});
-	initDisksPerspectiveListener();
-}
+			results.appendChild(card);
+		});
+		initDisksPerspectiveListener();
+	}
 
 
 });
