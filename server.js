@@ -26,21 +26,43 @@ app.use(
   })
 );
 
-// ----------------------------------------------------
-// 2️⃣ Leer claves del archivo local
-// ----------------------------------------------------
 function loadKeys() {
-  const file = fs.readFileSync("./keys/spApiKey.txt", "utf-8");
-  const lines = file.split("\n");
   const keys = {};
-  for (const line of lines) {
-    const [key, value] = line.split("=");
-    if (key && value) keys[key.trim()] = value.trim();
+
+  // 🔍 Detectar si estamos en Render (producción)
+  const isRender = !!process.env.RENDER;
+
+  if (isRender) {
+    // 🌐 PRODUCCIÓN: usar variables de entorno de Render
+    keys.CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+    keys.CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+    keys.YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+    keys.ENV = "render";
+  } else {
+    // 💻 LOCAL: cargar desde los archivos
+    try {
+      const spFile = fs.readFileSync("./keys/spApiKey.txt", "utf-8");
+      const ytFile = fs.readFileSync("./keys/ytApiKey.txt", "utf-8");
+
+      // Parsear líneas tipo CLIENT_ID=xxxx
+      spFile.split("\n").forEach(line => {
+        const [key, value] = line.split("=");
+        if (key && value) keys[key.trim()] = value.trim();
+      });
+
+      const ytMatch = ytFile.match(/=(.+)/);
+      if (ytMatch) keys.YOUTUBE_API_KEY = ytMatch[1].trim();
+
+      keys.ENV = "local";
+    } catch (err) {
+      console.error("⚠️ No se pudieron leer las claves locales:", err.message);
+    }
   }
+
   return keys;
 }
 
-const { CLIENT_ID, CLIENT_SECRET } = loadKeys();
+const { CLIENT_ID, CLIENT_SECRET, YOUTUBE_API_KEY, ENV } = loadKeys();
 
 // ----------------------------------------------------
 // 3️⃣ Endpoint para devolver el token de Spotify
@@ -138,9 +160,6 @@ app.get("/youtube-stats/:id", async (req, res) => {
   if (!videoId) return res.status(400).json({ error: "Falta videoId" });
 
   try {
-    const file = fs.readFileSync("./keys/ytApiKey.txt", "utf-8");
-    const YOUTUBE_API_KEY = file.split("=")[1].trim();
-
     const statsUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`;
     const statsRes = await fetch(statsUrl);
     const statsData = await statsRes.json();
@@ -165,9 +184,6 @@ app.get("/youtube-search", async (req, res) => {
   if (!q) return res.status(400).json({ error: "Falta parámetro q" });
 
   try {
-    const file = fs.readFileSync("./keys/ytApiKey.txt", "utf-8");
-    const YOUTUBE_API_KEY = file.split("=")[1].trim();
-
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
