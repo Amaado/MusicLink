@@ -417,7 +417,12 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			}
 
-
+			card.addEventListener('mouseenter', (e) => {
+				scene.style.transition = "transform 0.5s ease-in-out";
+								setTimeout(() => {
+					scene.style.transition = "";
+				}, 500);
+			});
 
 			// 🧭 Movimiento del ratón
 			card.addEventListener('mousemove', (e) => {
