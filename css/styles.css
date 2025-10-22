@@ -178,7 +178,7 @@ main{
     height: 110px;
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.5s ease-out;
+    /*transition: transform 0.5s ease-out;*/
 }
 
 .box__face {

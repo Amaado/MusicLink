@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					animateMask();
 				}
 
-				/*
+				
 				// 💡 Sombra dinámica tipo espejo (asimétrica en eje Y + opacidad variable)
 				const relX = (x / rect.width - 0.5) * 2; // -1 a 1
 				const relY = (y / rect.height - 0.5) * 2; // -1 (arriba) a 1 (abajo)
@@ -479,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					animatingShadow = true;
 					animateShadow();
 				}
-				*/
+				
 			});
 			
 
@@ -500,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					animateMask();
 				}
 				
-				/*
+				
 				// 🔙 Reinicia sombra al centro (sin sombra direccional)
 				targetShadowX = 0;
 				targetShadowY = 0;
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (!animatingShadow) {
 					animatingShadow = true;
 					animateShadow();
-				}*/
+				}
 
 				setTimeout(() => {
 					scene.style.transition = "";
