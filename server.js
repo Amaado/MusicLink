@@ -29,22 +29,29 @@ app.use(
 function loadKeys() {
   const keys = {};
 
-  // 🔍 Detectar si estamos en Render (producción)
+  // Detectar entorno
   const isRender = !!process.env.RENDER;
 
-  if (isRender) {
-    // 🌐 PRODUCCIÓN: usar variables de entorno de Render
-    keys.CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-    keys.CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-    keys.YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
-    keys.ENV = "render";
-  } else {
-    // 💻 LOCAL: cargar desde los archivos
-    try {
+  try {
+    if (isRender) {
+      // 🌐 En Render → leer desde /etc/secrets
+      const spFile = fs.readFileSync("/etc/secrets/spApiKey.txt", "utf-8");
+      const ytFile = fs.readFileSync("/etc/secrets/ytApiKey.txt", "utf-8");
+
+      spFile.split("\n").forEach(line => {
+        const [key, value] = line.split("=");
+        if (key && value) keys[key.trim()] = value.trim();
+      });
+
+      const ytMatch = ytFile.match(/=(.+)/);
+      if (ytMatch) keys.YOUTUBE_API_KEY = ytMatch[1].trim();
+
+      keys.ENV = "render";
+    } else {
+      // 💻 En local → leer desde ./keys
       const spFile = fs.readFileSync("./keys/spApiKey.txt", "utf-8");
       const ytFile = fs.readFileSync("./keys/ytApiKey.txt", "utf-8");
 
-      // Parsear líneas tipo CLIENT_ID=xxxx
       spFile.split("\n").forEach(line => {
         const [key, value] = line.split("=");
         if (key && value) keys[key.trim()] = value.trim();
@@ -54,9 +61,9 @@ function loadKeys() {
       if (ytMatch) keys.YOUTUBE_API_KEY = ytMatch[1].trim();
 
       keys.ENV = "local";
-    } catch (err) {
-      console.error("⚠️ No se pudieron leer las claves locales:", err.message);
     }
+  } catch (err) {
+    console.error("⚠️ No se pudieron cargar las claves:", err.message);
   }
 
   return keys;
