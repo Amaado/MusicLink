@@ -6,6 +6,8 @@ import express from "express";
 import fetch from "node-fetch";
 import fs from "fs";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const PORT = process.env.PORT || 4000; // Render asigna el puerto automáticamente
