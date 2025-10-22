@@ -6,6 +6,7 @@ import express from "express";
 import fetch from "node-fetch";
 import fs from "fs";
 import cors from "cors";
+import compression from "compression";
 
 const app = express();
 const PORT = process.env.PORT || 4000; // Render asigna el puerto automáticamente
@@ -18,6 +19,12 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(
+  compression({
+    level: 6, // 1–9 (balance entre velocidad y compresión)
+    threshold: 1024, // solo comprime archivos >1KB
+  })
+);
 
 // ----------------------------------------------------
 // 2️⃣ Leer claves del archivo local
