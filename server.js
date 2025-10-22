@@ -270,3 +270,23 @@ app.use(express.static(path.join(__dirname, "public"), staticOptions));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
+
+
+
+// ================================
+// 4️⃣ Iniciar servidor correctamente (Render + local)
+// ================================
+
+// Capturar errores globales (muy útil en Render)
+process.on("uncaughtException", err => {
+  console.error("💥 Uncaught Exception:", err);
+});
+process.on("unhandledRejection", err => {
+  console.error("💥 Unhandled Rejection:", err);
+});
+
+// 🔹 Usa "0.0.0.0" para que Render pueda acceder al servidor
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Servidor corriendo en modo ${ENV} en puerto ${PORT}`);
+});
