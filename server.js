@@ -1,21 +1,20 @@
 // ================================
-// server.js — Backend proxy seguro
+// server.js — Backend proxy seguro (para Render)
 // ================================
 
 import express from "express";
 import fetch from "node-fetch";
 import fs from "fs";
 import cors from "cors";
-import https from 'https';
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000; // Render asigna el puerto automáticamente
 
 // ----------------------------------------------------
 // 1️⃣ CORS: permite peticiones desde tu frontend
 // ----------------------------------------------------
 app.use(cors({
-  origin: ['https://127.0.0.1:5500', 'https://localhost:5500'],
+  origin: '*', // puedes poner tu dominio frontend si quieres restringirlo
   credentials: true
 }));
 
@@ -73,7 +72,6 @@ app.get("/spotify-artist/:id", async (req, res) => {
   if (!artistId) return res.status(400).json({ error: "Falta ID de artista" });
 
   try {
-    // 1️⃣ Obtener token de Spotify
     const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
     const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
@@ -88,13 +86,11 @@ app.get("/spotify-artist/:id", async (req, res) => {
     const token = tokenData.access_token;
     if (!token) return res.status(500).json({ error: "No se pudo obtener token" });
 
-    // 2️⃣ Obtener datos del artista desde la API oficial
     const artistRes = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const artistData = await artistRes.json();
 
-    // 3️⃣ Devolver solo la información relevante
     res.json({
       id: artistId,
       name: artistData.name,
@@ -109,7 +105,6 @@ app.get("/spotify-artist/:id", async (req, res) => {
   }
 });
 
-
 // ----------------------------------------------------
 // 🔹 Proxy para Odesli (song.link)
 // ----------------------------------------------------
@@ -120,17 +115,15 @@ app.get("/odesli", async (req, res) => {
   try {
     const response = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(url)}`);
     const data = await response.json();
-    res.json(data); // devolvemos el JSON al frontend
+    res.json(data);
   } catch (err) {
     console.error("Error en proxy Odesli:", err);
     res.status(500).json({ error: "Error al conectar con Odesli" });
   }
 });
 
-
-
 // ----------------------------------------------------
-// 🔹 Proxy para obtener vistas de un video YouTube (por ID)
+// 🔹 Proxy para obtener vistas de un video YouTube
 // ----------------------------------------------------
 app.get("/youtube-stats/:id", async (req, res) => {
   const videoId = req.params.id;
@@ -156,17 +149,17 @@ app.get("/youtube-stats/:id", async (req, res) => {
   }
 });
 
-
+// ----------------------------------------------------
+// 🔹 Búsqueda en YouTube
+// ----------------------------------------------------
 app.get("/youtube-search", async (req, res) => {
   const q = req.query.q;
   if (!q) return res.status(400).json({ error: "Falta parámetro q" });
 
   try {
-    // 1️⃣ Leer API key desde archivo
     const file = fs.readFileSync("./keys/ytApiKey.txt", "utf-8");
     const YOUTUBE_API_KEY = file.split("=")[1].trim();
 
-    // 2️⃣ Buscar videos por texto
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}`;
     const searchRes = await fetch(searchUrl);
     const searchData = await searchRes.json();
@@ -176,15 +169,11 @@ app.get("/youtube-search", async (req, res) => {
       return res.json({ items: [] });
     }
 
-    // 3️⃣ Extraer los IDs de los videos encontrados
     const videoIds = items.map(item => item.id.videoId).join(",");
-
-    // 4️⃣ Obtener detalles + estadísticas + duración de todos los videos
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoIds}&key=${YOUTUBE_API_KEY}`;
     const detailsRes = await fetch(detailsUrl);
     const detailsData = await detailsRes.json();
 
-    // 5️⃣ Unificar datos (los de búsqueda y los de detalles)
     const unified = detailsData.items.map(video => {
       const snippet = video.snippet || {};
       const stats = video.statistics || {};
@@ -197,13 +186,12 @@ app.get("/youtube-search", async (req, res) => {
         channelTitle: snippet.channelTitle,
         publishedAt: snippet.publishedAt,
         thumbnails: snippet.thumbnails,
-        duration: details.duration || null, // e.g. "PT3M45S"
+        duration: details.duration || null,
         views: stats.viewCount || 0,
         likes: stats.likeCount || 0,
       };
     });
 
-    // 6️⃣ Enviar todo junto al frontend
     res.json({ items: unified });
 
   } catch (error) {
@@ -212,17 +200,9 @@ app.get("/youtube-search", async (req, res) => {
   }
 });
 
-
-
-
-
-const options = {
-  key: fs.readFileSync('C:/Users/aamacib/Documents/GitHub/MusicLink/certs/127.0.0.1-key.pem'),
-  cert: fs.readFileSync('C:/Users/aamacib/Documents/GitHub/MusicLink/certs/127.0.0.1.pem')
-};
-
 // ----------------------------------------------------
-// 5️⃣ Arrancar el servidor
+// 5️⃣ Arrancar servidor (sin HTTPS manual)
 // ----------------------------------------------------
-https.createServer(options, app)
-  .listen(4000, () => console.log('Servidor HTTPS corriendo en https://127.0.0.1:5500'));
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+});
