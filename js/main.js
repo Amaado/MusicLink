@@ -392,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			}
 
-			
+
 			// 🔁 Animación del box-shadow
 			function animateShadow() {
 				if (!animatingShadow) return;
@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			card.addEventListener('mouseenter', (e) => {
 				scene.style.transition = "transform 0.5s ease-in-out";
-								setTimeout(() => {
+				setTimeout(() => {
 					scene.style.transition = "";
 				}, 500);
 			});
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					animateMask();
 				}
 
-				
+
 				// 💡 Sombra dinámica tipo espejo (asimétrica en eje Y + opacidad variable)
 				const relX = (x / rect.width - 0.5) * 2; // -1 a 1
 				const relY = (y / rect.height - 0.5) * 2; // -1 (arriba) a 1 (abajo)
@@ -484,9 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
 					animatingShadow = true;
 					animateShadow();
 				}
-				
+
 			});
-			
+
 
 
 			// 🚪 Al salir del área
@@ -504,8 +504,8 @@ document.addEventListener('DOMContentLoaded', () => {
 					animatingMask = true;
 					animateMask();
 				}
-				
-				
+
+
 				// 🔙 Reinicia sombra al centro (sin sombra direccional)
 				targetShadowX = 0;
 				targetShadowY = 0;
