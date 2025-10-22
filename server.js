@@ -217,6 +217,9 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+app.use("/js", express.static(path.join(__dirname, "js")));
+app.use("/css", express.static(path.join(__dirname, "css")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 // ----------------------------------------------------
 // 5️⃣ Arrancar servidor (sin HTTPS manual)
